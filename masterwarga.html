@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Keuangan | Sistem Keuangan & Pendataan Warga Tulip IX</title>
+    <title>Master Data Warga Tulip IX | Sistem Keuangan & Pendataan Warga Tulip IX</title>
     <!-- Favicon PNG / ICO -->
     <link rel="icon" type="image/png" href="assets/img/favicon.png">
     <!-- Tailwind CSS CDN + konfigurasi -->
@@ -16,13 +16,10 @@
     <!-- Google Fonts (Inter) -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap">
 
-    <!-- Chart.js CDN -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
     <!-- Custom CSS -->
     <link rel="stylesheet" href="assets/css/style.css">
 </head>
-<body class="bg-slate-50 text-slate-800 font-sans antialiased min-h-screen flex flex-col md:flex-row" data-page="dashboard" data-collections="warga,kategori,transaksi">
+<body class="bg-slate-50 text-slate-800 font-sans antialiased min-h-screen flex flex-col md:flex-row" data-page="warga" data-collections="warga">
 
     <!-- Sidebar Navigation -->
     <aside id="sidebar" class="no-print bg-slate-900 text-slate-300 fixed md:static inset-y-0 left-0 w-64 -translate-x-full md:translate-x-0 flex-shrink-0 transition-transform duration-300 z-40 flex flex-col min-h-screen">
@@ -52,11 +49,11 @@
 
         <!-- Navigation Links -->
         <nav class="flex-1 p-4 space-y-1 overflow-y-auto">
-            <a href="dashboard.html" id="nav-dashboard" class="nav-item w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 text-white bg-emerald-600">
+            <a href="dashboard.html" id="nav-dashboard" class="nav-item w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 hover:bg-slate-800 hover:text-white">
                 <i class="fa-solid fa-chart-pie w-5 text-center"></i>
                 <span>Dashboard</span>
             </a>
-            <a href="masterwarga.html" id="nav-warga" class="nav-item w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 hover:bg-slate-800 hover:text-white">
+            <a href="masterwarga.html" id="nav-warga" class="nav-item w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 text-white bg-emerald-600">
                 <i class="fa-solid fa-users w-5 text-center"></i>
                 <span>Master Warga</span>
             </a>
@@ -88,7 +85,7 @@
                 <button id="openSidebarMobile" class="md:hidden p-2 rounded-lg text-slate-600 hover:bg-slate-100">
                     <i class="fa-solid fa-bars text-lg"></i>
                 </button>
-                <h2 id="pageTitle" class="text-xl font-bold text-slate-800">Dashboard Keuangan</h2>
+                <h2 id="pageTitle" class="text-xl font-bold text-slate-800">Master Data Warga Tulip IX</h2>
             </div>
 
             <!-- User Status & Auth Action Button -->
@@ -106,82 +103,90 @@
 
         <main class="flex-1 p-4 md:p-6 overflow-x-hidden">
 
-            <section id="view-dashboard" class="space-y-6">
-                <!-- Summary Cards Grid -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                    <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
-                        <div class="flex items-center justify-between">
-                            <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Total Kas Saat Ini</span>
-                            <div class="p-2.5 rounded-xl bg-blue-50 text-blue-600">
-                                <i class="fa-solid fa-wallet text-lg"></i>
-                            </div>
+            <section id="view-warga" class="space-y-6">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm">
+                    <div class="flex flex-col sm:flex-row gap-3 flex-1 max-w-md">
+                        <div class="relative flex-1">
+                            <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+                            <input type="text" id="searchWarga" oninput="renderWargaTable()" placeholder="Cari nama / no. rumah..." class="w-full pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
                         </div>
-                        <p id="dashTotalKas" class="text-2xl font-extrabold text-slate-900 mt-2">Rp 0</p>
-                        <p class="text-xs text-slate-500 mt-1 flex items-center">
-                            <span class="text-emerald-600 font-medium mr-1"><i class="fa-solid fa-shield-halved"></i> Saldo Kas</span> Aktif
-                        </p>
+                        <select id="filterStatusIuran" onchange="renderWargaTable()" class="px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                            <option value="">Semua Status Iuran</option>
+                            <option value="Lunas">Lunas</option>
+                            <option value="Tunggak">Menunggak</option>
+                        </select>
                     </div>
-
-                    <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
-                        <div class="flex items-center justify-between">
-                            <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Pemasukan (Bulan Ini)</span>
-                            <div class="p-2.5 rounded-xl bg-emerald-50 text-emerald-600">
-                                <i class="fa-solid fa-arrow-down-left text-lg"></i>
-                            </div>
-                        </div>
-                        <p id="dashMasukBulan" class="text-2xl font-extrabold text-emerald-600 mt-2">Rp 0</p>
-                        <p class="text-xs text-slate-500 mt-1">Aktivitas bulan berjalan</p>
-                    </div>
-
-                    <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
-                        <div class="flex items-center justify-between">
-                            <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Pengeluaran (Bulan Ini)</span>
-                            <div class="p-2.5 rounded-xl bg-rose-50 text-rose-600">
-                                <i class="fa-solid fa-arrow-up-right text-lg"></i>
-                            </div>
-                        </div>
-                        <p id="dashKeluarBulan" class="text-2xl font-extrabold text-rose-600 mt-2">Rp 0</p>
-                        <p class="text-xs text-slate-500 mt-1">Aktivitas bulan berjalan</p>
-                    </div>
-
-                    <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
-                        <div class="flex items-center justify-between">
-                            <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Total Penghuni</span>
-                            <div class="p-2.5 rounded-xl bg-purple-50 text-purple-600">
-                                <i class="fa-solid fa-house-user text-lg"></i>
-                            </div>
-                        </div>
-                        <p id="dashTotalWarga" class="text-2xl font-extrabold text-slate-900 mt-2">0 KK</p>
-                        <p id="dashTunggakanBadge" class="text-xs text-amber-600 mt-1 font-medium">
-                            <i class="fa-solid fa-circle-exclamation"></i> 0 Menunggak Iuran
-                        </p>
-                    </div>
+                    <button onclick="openModalWarga()" class="admin-only hidden bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-xl text-sm font-medium items-center justify-center space-x-2 shadow-lg shadow-emerald-600/20 transition">
+                        <i class="fa-solid fa-user-plus"></i>
+                        <span>Tambah Warga</span>
+                    </button>
                 </div>
 
-                <!-- Charts and Summary Section -->
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    <div class="lg:col-span-2 bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
-                        <div class="flex items-center justify-between mb-4">
-                            <h3 class="font-bold text-slate-800 text-base">Grafik Arus Kas (6 Bulan Terakhir)</h3>
-                            <span class="text-xs text-slate-400"><i class="fa-solid fa-chart-line"></i> Dynamic</span>
-                        </div>
-                        <div class="relative w-full h-72">
-                            <canvas id="financeChart"></canvas>
-                        </div>
-                    </div>
-
-                    <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col">
-                        <div class="flex items-center justify-between mb-4">
-                            <h3 class="font-bold text-slate-800 text-base">Transaksi Terakhir</h3>
-                            <a href="transaksi.html" class="text-xs text-emerald-600 hover:underline font-medium">Lihat Semua</a>
-                        </div>
-                        <div id="dashRecentTransactions" class="flex-1 space-y-3 overflow-y-auto max-h-72">
-                            <!-- Populated via JS -->
-                        </div>
+                <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-slate-50 border-b border-slate-200 text-xs text-slate-500 uppercase font-semibold">
+                                    <th class="p-4">No. Rumah/Blok</th>
+                                    <th class="p-4">Kepala Keluarga</th>
+                                    <th class="p-4">Status Hunian</th>
+                                    <th class="p-4">No. Telephone / HP</th>
+                                    <th class="p-4">Status Iuran Bulanan</th>
+                                    <th class="p-4 text-center th-aksi-col hidden">Aksi (Admin)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="wargaTableBody" class="divide-y divide-slate-100 text-sm">
+                                <!-- Populated via JS -->
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </section>
         </main>
+    </div>
+
+    <!-- MODAL WARGA -->
+    <div id="modalWarga" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-2xl max-w-md w-full shadow-2xl p-6 relative">
+            <button onclick="closeModalWarga()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+            <h3 id="modalWargaTitle" class="font-bold text-xl text-slate-900 mb-4">Tambah Data Warga</h3>
+
+            <form id="formWarga" onsubmit="saveWarga(event)" class="space-y-4">
+                <input type="hidden" id="wargaId">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Nama Kepala Keluarga</label>
+                    <input type="text" id="wargaNama" required placeholder="Contoh: Pak Budi" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">No. Rumah / Blok</label>
+                    <input type="text" id="wargaBlok" required placeholder="Contoh: IX / No. 12" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Status Hunian</label>
+                    <select id="wargaStatusHunian" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                        <option value="Tetap">Tetap</option>
+                        <option value="Kontrak">Kontrak</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">No. HP / Whatsapp</label>
+                    <input type="text" id="wargaHp" placeholder="0812xxxxxxx" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Status Iuran Bulanan</label>
+                    <select id="wargaStatusIuran" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                        <option value="Lunas">Lunas</option>
+                        <option value="Tunggak">Menunggak</option>
+                    </select>
+                </div>
+                <div class="flex justify-end space-x-2 pt-2">
+                    <button type="button" onclick="closeModalWarga()" class="px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 bg-slate-100 hover:bg-slate-200">Batal</button>
+                    <button type="submit" class="px-4 py-2 rounded-xl text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-700 shadow-md">Simpan Data</button>
+                </div>
+            </form>
+        </div>
     </div>
 
     <!-- MODAL AUTHENTICATION (LOGIN / REGISTER) -->
@@ -257,7 +262,7 @@
 
     <!-- Fungsi bersama + logika halaman (script klasik) -->
     <script src="assets/js/common.js"></script>
-    <script src="assets/js/pages/dashboard.js"></script>
+    <script src="assets/js/pages/masterwarga.js"></script>
 
     <!-- Firebase (ES Module) -->
     <script type="module" src="assets/js/firebase.js"></script>

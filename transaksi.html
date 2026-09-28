@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Keuangan | Sistem Keuangan & Pendataan Warga Tulip IX</title>
+    <title>Catatan Transaksi Kas | Sistem Keuangan & Pendataan Warga Tulip IX</title>
     <!-- Favicon PNG / ICO -->
     <link rel="icon" type="image/png" href="assets/img/favicon.png">
     <!-- Tailwind CSS CDN + konfigurasi -->
@@ -16,13 +16,10 @@
     <!-- Google Fonts (Inter) -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap">
 
-    <!-- Chart.js CDN -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
     <!-- Custom CSS -->
     <link rel="stylesheet" href="assets/css/style.css">
 </head>
-<body class="bg-slate-50 text-slate-800 font-sans antialiased min-h-screen flex flex-col md:flex-row" data-page="dashboard" data-collections="warga,kategori,transaksi">
+<body class="bg-slate-50 text-slate-800 font-sans antialiased min-h-screen flex flex-col md:flex-row" data-page="transaksi" data-collections="warga,kategori,transaksi">
 
     <!-- Sidebar Navigation -->
     <aside id="sidebar" class="no-print bg-slate-900 text-slate-300 fixed md:static inset-y-0 left-0 w-64 -translate-x-full md:translate-x-0 flex-shrink-0 transition-transform duration-300 z-40 flex flex-col min-h-screen">
@@ -52,7 +49,7 @@
 
         <!-- Navigation Links -->
         <nav class="flex-1 p-4 space-y-1 overflow-y-auto">
-            <a href="dashboard.html" id="nav-dashboard" class="nav-item w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 text-white bg-emerald-600">
+            <a href="dashboard.html" id="nav-dashboard" class="nav-item w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 hover:bg-slate-800 hover:text-white">
                 <i class="fa-solid fa-chart-pie w-5 text-center"></i>
                 <span>Dashboard</span>
             </a>
@@ -64,7 +61,7 @@
                 <i class="fa-solid fa-tags w-5 text-center"></i>
                 <span>Master Kategori</span>
             </a>
-            <a href="transaksi.html" id="nav-transaksi" class="nav-item w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 hover:bg-slate-800 hover:text-white">
+            <a href="transaksi.html" id="nav-transaksi" class="nav-item w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 text-white bg-emerald-600">
                 <i class="fa-solid fa-money-bill-transfer w-5 text-center"></i>
                 <span>Transaksi</span>
             </a>
@@ -88,7 +85,7 @@
                 <button id="openSidebarMobile" class="md:hidden p-2 rounded-lg text-slate-600 hover:bg-slate-100">
                     <i class="fa-solid fa-bars text-lg"></i>
                 </button>
-                <h2 id="pageTitle" class="text-xl font-bold text-slate-800">Dashboard Keuangan</h2>
+                <h2 id="pageTitle" class="text-xl font-bold text-slate-800">Catatan Transaksi Kas</h2>
             </div>
 
             <!-- User Status & Auth Action Button -->
@@ -106,82 +103,98 @@
 
         <main class="flex-1 p-4 md:p-6 overflow-x-hidden">
 
-            <section id="view-dashboard" class="space-y-6">
-                <!-- Summary Cards Grid -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                    <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
-                        <div class="flex items-center justify-between">
-                            <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Total Kas Saat Ini</span>
-                            <div class="p-2.5 rounded-xl bg-blue-50 text-blue-600">
-                                <i class="fa-solid fa-wallet text-lg"></i>
-                            </div>
-                        </div>
-                        <p id="dashTotalKas" class="text-2xl font-extrabold text-slate-900 mt-2">Rp 0</p>
-                        <p class="text-xs text-slate-500 mt-1 flex items-center">
-                            <span class="text-emerald-600 font-medium mr-1"><i class="fa-solid fa-shield-halved"></i> Saldo Kas</span> Aktif
-                        </p>
+            <section id="view-transaksi" class="space-y-6">
+                <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm">
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 flex-1">
+                        <select id="filterTxTipe" onchange="renderTransaksiTable()" class="px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                            <option value="">Semua Jenis</option>
+                            <option value="Pemasukan">Pemasukan (Kas Masuk)</option>
+                            <option value="Pengeluaran">Pengeluaran (Kas Keluar)</option>
+                        </select>
+                        <select id="filterTxKategori" onchange="renderTransaksiTable()" class="px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                            <option value="">Semua Kategori</option>
+                        </select>
+                        <input type="month" id="filterTxBulan" onchange="renderTransaksiTable()" class="px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
                     </div>
-
-                    <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
-                        <div class="flex items-center justify-between">
-                            <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Pemasukan (Bulan Ini)</span>
-                            <div class="p-2.5 rounded-xl bg-emerald-50 text-emerald-600">
-                                <i class="fa-solid fa-arrow-down-left text-lg"></i>
-                            </div>
-                        </div>
-                        <p id="dashMasukBulan" class="text-2xl font-extrabold text-emerald-600 mt-2">Rp 0</p>
-                        <p class="text-xs text-slate-500 mt-1">Aktivitas bulan berjalan</p>
-                    </div>
-
-                    <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
-                        <div class="flex items-center justify-between">
-                            <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Pengeluaran (Bulan Ini)</span>
-                            <div class="p-2.5 rounded-xl bg-rose-50 text-rose-600">
-                                <i class="fa-solid fa-arrow-up-right text-lg"></i>
-                            </div>
-                        </div>
-                        <p id="dashKeluarBulan" class="text-2xl font-extrabold text-rose-600 mt-2">Rp 0</p>
-                        <p class="text-xs text-slate-500 mt-1">Aktivitas bulan berjalan</p>
-                    </div>
-
-                    <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
-                        <div class="flex items-center justify-between">
-                            <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Total Penghuni</span>
-                            <div class="p-2.5 rounded-xl bg-purple-50 text-purple-600">
-                                <i class="fa-solid fa-house-user text-lg"></i>
-                            </div>
-                        </div>
-                        <p id="dashTotalWarga" class="text-2xl font-extrabold text-slate-900 mt-2">0 KK</p>
-                        <p id="dashTunggakanBadge" class="text-xs text-amber-600 mt-1 font-medium">
-                            <i class="fa-solid fa-circle-exclamation"></i> 0 Menunggak Iuran
-                        </p>
-                    </div>
+                    
+                    <button onclick="openModalTransaksi()" class="admin-only hidden bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-xl text-sm font-medium items-center justify-center space-x-2 shadow-lg shadow-emerald-600/20 transition">
+                        <i class="fa-solid fa-circle-plus"></i>
+                        <span>Catat Transaksi Baru</span>
+                    </button>
                 </div>
 
-                <!-- Charts and Summary Section -->
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    <div class="lg:col-span-2 bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
-                        <div class="flex items-center justify-between mb-4">
-                            <h3 class="font-bold text-slate-800 text-base">Grafik Arus Kas (6 Bulan Terakhir)</h3>
-                            <span class="text-xs text-slate-400"><i class="fa-solid fa-chart-line"></i> Dynamic</span>
-                        </div>
-                        <div class="relative w-full h-72">
-                            <canvas id="financeChart"></canvas>
-                        </div>
-                    </div>
-
-                    <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col">
-                        <div class="flex items-center justify-between mb-4">
-                            <h3 class="font-bold text-slate-800 text-base">Transaksi Terakhir</h3>
-                            <a href="transaksi.html" class="text-xs text-emerald-600 hover:underline font-medium">Lihat Semua</a>
-                        </div>
-                        <div id="dashRecentTransactions" class="flex-1 space-y-3 overflow-y-auto max-h-72">
-                            <!-- Populated via JS -->
-                        </div>
+                <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-slate-50 border-b border-slate-200 text-xs text-slate-500 uppercase font-semibold">
+                                    <th class="p-4">Tanggal</th>
+                                    <th class="p-4">Jenis</th>
+                                    <th class="p-4">Kategori</th>
+                                    <th class="p-4">Keterangan / Warga</th>
+                                    <th class="p-4 text-right">Jumlah (Rp)</th>
+                                    <th class="p-4 text-center th-aksi-col hidden">Aksi (Admin)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="transaksiTableBody" class="divide-y divide-slate-100 text-sm">
+                                <!-- Populated via JS -->
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </section>
         </main>
+    </div>
+
+    <!-- MODAL TRANSAKSI -->
+    <div id="modalTransaksi" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-2xl max-w-md w-full shadow-2xl p-6 relative">
+            <button onclick="closeModalTransaksi()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+            <h3 id="modalTransaksiTitle" class="font-bold text-xl text-slate-900 mb-4">Catat Transaksi Kas</h3>
+
+            <form id="formTransaksi" onsubmit="saveTransaksi(event)" class="space-y-4">
+                <input type="hidden" id="transaksiId">
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Tanggal</label>
+                        <input type="date" id="txTanggal" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Jenis Transaksi</label>
+                        <select id="txTipe" onchange="populateModalCategoryDropdown()" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                            <option value="Pemasukan">Pemasukan</option>
+                            <option value="Pengeluaran">Pengeluaran</option>
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Kategori Transaksi</label>
+                    <select id="txKategori" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                        <!-- Populated dynamic -->
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Pilih Warga (Opsional jika iuran)</label>
+                    <select id="txWargaId" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                        <!-- Populated dynamic -->
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Jumlah Nominal (Rp)</label>
+                    <input type="number" id="txJumlah" required min="1" placeholder="50000" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Keterangan Tambahan</label>
+                    <textarea id="txKeterangan" rows="2" placeholder="Catatan opsional..." class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"></textarea>
+                </div>
+                <div class="flex justify-end space-x-2 pt-2">
+                    <button type="button" onclick="closeModalTransaksi()" class="px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 bg-slate-100 hover:bg-slate-200">Batal</button>
+                    <button type="submit" class="px-4 py-2 rounded-xl text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-700 shadow-md">Simpan Transaksi</button>
+                </div>
+            </form>
+        </div>
     </div>
 
     <!-- MODAL AUTHENTICATION (LOGIN / REGISTER) -->
@@ -257,7 +270,7 @@
 
     <!-- Fungsi bersama + logika halaman (script klasik) -->
     <script src="assets/js/common.js"></script>
-    <script src="assets/js/pages/dashboard.js"></script>
+    <script src="assets/js/pages/transaksi.js"></script>
 
     <!-- Firebase (ES Module) -->
     <script type="module" src="assets/js/firebase.js"></script>
