@@ -9,71 +9,76 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
     body {
       font-family: 'Plus Jakarta Sans', sans-serif;
     }
   </style>
 </head>
-<body class="bg-slate-50 text-slate-800 min-h-screen">
+<body class="bg-slate-100 text-slate-800 min-h-screen flex flex-col justify-between antialiased">
 
   <!-- Header / Navbar -->
-  <header class="bg-gradient-to-r from-blue-700 to-indigo-800 text-white shadow-lg sticky top-0 z-50">
-    <div class="max-w-6xl mx-auto px-4 py-4 flex flex-col md:flex-row justify-between items-center gap-4">
-      <div class="flex items-center space-x-3">
-        <div class="p-2 bg-white/10 rounded-xl backdrop-blur-md">
-          <i class="fa-solid font-bold fa-hand-holding-dollar text-2xl text-blue-200"></i>
+  <header class="bg-gradient-to-r from-blue-700 via-indigo-700 to-indigo-800 text-white shadow-md sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
+      <div class="flex items-center space-x-3.5">
+        <div class="p-2.5 bg-white/10 rounded-xl backdrop-blur-md border border-white/10 flex items-center justify-center">
+          <i class="fa-solid fa-hand-holding-dollar text-2xl text-blue-200"></i>
         </div>
         <div>
-          <h1 class="text-xl font-bold tracking-tight">Iuran Bulanan Warga Tulip IX</h1>
+          <h1 class="text-lg sm:text-xl font-bold tracking-tight leading-tight">Iuran Bulanan Warga Tulip IX</h1>
           <p class="text-xs text-blue-200">Alur Transaksi & Transparansi Kas Lorong Tulip IX</p>
         </div>
       </div>
     </div>
   </header>
 
-  <main class="max-w-6xl mx-auto px-4 py-8 space-y-8">
+  <!-- Main Content -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 py-8 w-full space-y-8 flex-grow">
 
     <!-- Visual Flowchart Section -->
-    <section class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
-      <h2 class="text-lg font-bold text-slate-800 mb-6 flex items-center gap-2">
-        <i class="fa-solid fa-diagram-project text-blue-600"></i> Alur Pembayaran & Penyaluran Iuran Tulip IX
-      </h2>
+    <section class="bg-white p-5 sm:p-7 rounded-2xl shadow-sm border border-slate-200/80">
+      <div class="border-b border-slate-100 pb-4 mb-6">
+        <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2.5">
+          <i class="fa-solid fa-diagram-project text-blue-600"></i> Alur Pembayaran & Penyaluran Iuran Tulip IX
+        </h2>
+        <p class="text-xs text-slate-500 mt-1">Panduan langkah-langkah penyetoran iuran hingga masuk ke Kas Lorong</p>
+      </div>
       
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 relative">
+      <!-- Flow Grid Container -->
+      <div class="grid grid-cols-1 lg:grid-cols-11 gap-4 lg:gap-2 items-center">
+        
         <!-- Step 1 -->
-        <div class="relative bg-slate-50 border border-slate-200 rounded-xl p-5 hover:border-blue-300 transition-all shadow-sm">
-          <div class="absolute -top-3 left-4 bg-blue-600 text-white text-xs font-bold px-2.5 py-0.5 rounded-full">
+        <div class="lg:col-span-4 relative bg-slate-50 border border-slate-200 rounded-2xl p-5 hover:border-blue-300 transition-all shadow-sm flex flex-col justify-between h-full">
+          <div class="absolute -top-3 left-4 bg-blue-600 text-white text-[11px] font-bold px-3 py-0.5 rounded-full shadow-sm">
             Langkah 1
           </div>
-          <div class="flex items-center gap-3 mb-3 mt-1">
-            <div class="p-3 bg-blue-100 text-blue-600 rounded-lg">
-              <i class="fa-solid fa-users text-xl"></i>
+          <div>
+            <div class="flex items-center gap-3 mb-4 mt-1">
+              <div class="p-3 bg-blue-100 text-blue-600 rounded-xl">
+                <i class="fa-solid fa-users text-xl"></i>
+              </div>
+              <div>
+                <h3 class="font-bold text-slate-800 text-sm sm:text-base">Warga Tulip IX</h3>
+                <p class="text-xs text-slate-500">Pembayaran Iuran Bulanan</p>
+              </div>
             </div>
-            <div>
-              <h3 class="font-bold text-slate-800">Warga Tulip IX</h3>
-              <p class="text-xs text-slate-500">Pembayaran Iuran</p>
-            </div>
-          </div>
-          
-          <div class="space-y-3">
-            <p class="text-xs text-slate-600">
-              Warga melakukan transfer iuran bulanan ke rekening Humas Tulip IX.
+            
+            <p class="text-xs text-slate-600 mb-4 leading-relaxed">
+              Warga melakukan transfer iuran bulanan ke rekening Humas / Penampung Tulip IX.
             </p>
 
             <!-- Banner Total Iuran -->
-            <div class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white p-2.5 rounded-lg flex justify-between items-center shadow-sm">
+            <div class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white p-3 rounded-xl flex justify-between items-center shadow-sm mb-3">
               <div class="flex items-center gap-2">
                 <i class="fa-solid fa-wallet text-blue-200 text-sm"></i>
                 <span class="text-xs font-semibold">Total Iuran Bulanan</span>
               </div>
-              <span class="text-sm font-extrabold font-mono bg-white/20 px-2 py-0.5 rounded backdrop-blur-sm">Rp 60.000</span>
+              <span class="text-sm font-extrabold font-mono bg-white/20 px-2.5 py-0.5 rounded-lg backdrop-blur-sm">Rp 60.000</span>
             </div>
 
             <!-- Grid Pembagian Iuran -->
             <div class="grid grid-cols-2 gap-2 text-xs">
-              <!-- Item 1: Sampah -->
-              <div class="bg-white p-2 rounded-lg border border-slate-200 flex flex-col justify-between hover:border-emerald-300 transition-all">
+              <div class="bg-white p-2.5 rounded-xl border border-slate-200 flex flex-col justify-between hover:border-emerald-300 transition-all">
                 <div class="flex items-center gap-1.5 text-slate-600 mb-1">
                   <i class="fa-solid fa-trash-can text-emerald-500 text-xs"></i>
                   <span class="font-medium text-[11px]">Iuran Sampah</span>
@@ -81,8 +86,7 @@
                 <span class="font-bold text-slate-800 font-mono">Rp 20.000</span>
               </div>
 
-              <!-- Item 2: Keamanan -->
-              <div class="bg-white p-2 rounded-lg border border-slate-200 flex flex-col justify-between hover:border-blue-300 transition-all">
+              <div class="bg-white p-2.5 rounded-xl border border-slate-200 flex flex-col justify-between hover:border-blue-300 transition-all">
                 <div class="flex items-center gap-1.5 text-slate-600 mb-1">
                   <i class="fa-solid fa-shield-halved text-blue-500 text-xs"></i>
                   <span class="font-medium text-[11px]">Kas Keamanan</span>
@@ -90,8 +94,7 @@
                 <span class="font-bold text-slate-800 font-mono">Rp 10.000</span>
               </div>
 
-              <!-- Item 3: Kas RT -->
-              <div class="bg-white p-2 rounded-lg border border-slate-200 flex flex-col justify-between hover:border-indigo-300 transition-all">
+              <div class="bg-white p-2.5 rounded-xl border border-slate-200 flex flex-col justify-between hover:border-indigo-300 transition-all">
                 <div class="flex items-center gap-1.5 text-slate-600 mb-1">
                   <i class="fa-solid fa-building text-indigo-500 text-xs"></i>
                   <span class="font-medium text-[11px]">Kas RT.003</span>
@@ -99,8 +102,7 @@
                 <span class="font-bold text-slate-800 font-mono">Rp 10.000</span>
               </div>
 
-              <!-- Item 4: Kas RW -->
-              <div class="bg-white p-2 rounded-lg border border-slate-200 flex flex-col justify-between hover:border-purple-300 transition-all">
+              <div class="bg-white p-2.5 rounded-xl border border-slate-200 flex flex-col justify-between hover:border-purple-300 transition-all">
                 <div class="flex items-center gap-1.5 text-slate-600 mb-1">
                   <i class="fa-solid fa-landmark text-purple-500 text-xs"></i>
                   <span class="font-medium text-[11px]">Kas RW.026</span>
@@ -108,8 +110,7 @@
                 <span class="font-bold text-slate-800 font-mono">Rp 3.000</span>
               </div>
 
-              <!-- Item 5: Kas Sosial -->
-              <div class="bg-white p-2 rounded-lg border border-slate-200 flex flex-col justify-between hover:border-rose-300 transition-all">
+              <div class="bg-white p-2.5 rounded-xl border border-slate-200 flex flex-col justify-between hover:border-rose-300 transition-all">
                 <div class="flex items-center gap-1.5 text-slate-600 mb-1">
                   <i class="fa-solid fa-hand-holding-heart text-rose-500 text-xs"></i>
                   <span class="font-medium text-[11px]">Social RW.026</span>
@@ -117,8 +118,7 @@
                 <span class="font-bold text-slate-800 font-mono">Rp 2.000</span>
               </div>
 
-              <!-- Item 6: Kas Lorong -->
-              <div class="bg-amber-50 p-2 rounded-lg border border-amber-200 flex flex-col justify-between hover:border-amber-300 transition-all col-span-1">
+              <div class="bg-amber-50 p-2.5 rounded-xl border border-amber-200 flex flex-col justify-between hover:border-amber-300 transition-all">
                 <div class="flex items-center gap-1.5 text-amber-800 mb-1">
                   <i class="fa-solid fa-road text-amber-600 text-xs"></i>
                   <span class="font-semibold text-[11px]">Kas Lorong</span>
@@ -129,127 +129,217 @@
           </div>
         </div>
 
-        <!-- Arrow 1 (Desktop) -->
-        <div class="hidden md:flex items-center justify-center -mx-3 z-10">
-          <div class="w-8 h-8 rounded-full bg-blue-50 border border-blue-200 flex items-center justify-center text-blue-600">
+        <!-- Arrow 1 (Responsive Mobile & Desktop) -->
+        <div class="lg:col-span-1 flex items-center justify-center my-2 lg:my-0">
+          <div class="w-9 h-9 rounded-full bg-blue-50 border border-blue-200 flex items-center justify-center text-blue-600 shadow-sm rotate-90 lg:rotate-0">
             <i class="fa-solid fa-arrow-right"></i>
           </div>
         </div>
 
         <!-- Step 2 -->
-        <div class="relative bg-gradient-to-br from-orange-50 to-amber-50 border border-orange-200 rounded-xl p-5 hover:border-orange-300 transition-all shadow-sm">
-          <div class="absolute -top-3 left-4 bg-orange-600 text-white text-xs font-bold px-2.5 py-0.5 rounded-full">
+        <div class="lg:col-span-3 relative bg-gradient-to-br from-orange-50 to-amber-50/50 border border-orange-200 rounded-2xl p-5 hover:border-orange-300 transition-all shadow-sm flex flex-col justify-between h-full">
+          <div class="absolute -top-3 left-4 bg-orange-600 text-white text-[11px] font-bold px-3 py-0.5 rounded-full shadow-sm">
             Langkah 2 (Penampung)
           </div>
-          <div class="flex items-center gap-3 mb-3 mt-1">
-            <div class="p-3 bg-orange-500 text-white rounded-lg shadow-sm">
-              <i class="fa-solid fa-building-columns text-xl"></i>
+          <div>
+            <div class="flex items-center gap-3 mb-4 mt-1">
+              <div class="p-3 bg-orange-500 text-white rounded-xl shadow-sm">
+                <i class="fa-solid fa-building-columns text-xl"></i>
+              </div>
+              <div>
+                <h3 class="font-bold text-slate-800 text-sm sm:text-base">SeaBank Penampung</h3>
+                <p class="text-xs text-slate-500">Koordinator / Admin Warga</p>
+              </div>
             </div>
-            <div>
-              <h3 class="font-bold text-slate-800">SeaBank Penampung</h3>
-              <p class="text-xs text-slate-500">Koordinator / Admin Warga</p>
+            
+            <div class="bg-white/90 backdrop-blur-sm p-3.5 rounded-xl border border-orange-200/60 space-y-2 text-xs">
+              <p class="font-medium text-slate-600">Nomor Rekening:</p>
+              <div class="flex justify-between items-center bg-slate-50 p-2.5 rounded-lg border border-slate-200">
+                <span class="font-mono font-bold text-orange-600 text-sm sm:text-base">901764117145</span>
+                <button onclick="copyToClipboard('901764117145')" class="bg-orange-100 hover:bg-orange-200 text-orange-700 px-2.5 py-1 rounded-md text-xs font-semibold flex items-center gap-1 transition-all">
+                  <i class="fa-regular fa-copy"></i> Salin
+                </button>
+              </div>
+              <p class="text-slate-600 pt-1">Atas Nama: <br><span class="font-bold text-slate-800 text-xs">Buce. I. F. Pesiwarissa</span></p>
             </div>
-          </div>
-          <div class="bg-white/80 p-3 rounded-lg border border-orange-100 space-y-1 text-xs">
-            <p class="font-medium text-slate-700">No. Rekening:</p>
-            <div class="flex justify-between items-center bg-white p-2 rounded border border-slate-200">
-              <span class="font-mono font-bold text-orange-600 text-sm">901764117145</span>
-              <button onclick="copyToClipboard('901764117145')" class="text-slate-400 hover:text-orange-600 text-xs flex items-center gap-1">
-                <i class="fa-regular fa-copy"></i> Salin
-              </button>
-            </div>
-            <p class="text-slate-600 mt-1">a/n <span class="font-semibold text-slate-800">Buce. I. F. Pesiwarissa</span></p>
           </div>
         </div>
 
-        <!-- Arrow 2 (Desktop) -->
-        <div class="hidden md:flex items-center justify-center -mx-3 z-10">
-          <div class="w-8 h-8 rounded-full bg-orange-50 border border-orange-200 flex items-center justify-center text-orange-600">
+        <!-- Arrow 2 (Responsive Mobile & Desktop) -->
+        <div class="lg:col-span-1 flex items-center justify-center my-2 lg:my-0">
+          <div class="w-9 h-9 rounded-full bg-orange-50 border border-orange-200 flex items-center justify-center text-orange-600 shadow-sm rotate-90 lg:rotate-0">
             <i class="fa-solid fa-arrow-right"></i>
           </div>
         </div>
 
         <!-- Step 3 -->
-        <div class="relative bg-gradient-to-br from-emerald-50 to-teal-50 border border-emerald-200 rounded-xl p-5 hover:border-emerald-300 transition-all shadow-sm">
-          <div class="absolute -top-3 left-4 bg-emerald-600 text-white text-xs font-bold px-2.5 py-0.5 rounded-full">
-            Langkah 3 (Kas Lorong)
+        <div class="lg:col-span-2 relative bg-gradient-to-br from-emerald-50 to-teal-50/50 border border-emerald-200 rounded-2xl p-5 hover:border-emerald-300 transition-all shadow-sm flex flex-col justify-between h-full">
+          <div class="absolute -top-3 left-4 bg-emerald-600 text-white text-[11px] font-bold px-3 py-0.5 rounded-full shadow-sm">
+            Langkah 3
           </div>
-          <div class="flex items-center gap-3 mb-3 mt-1">
-            <div class="p-3 bg-emerald-600 text-white rounded-lg shadow-sm">
-              <i class="fa-solid fa-vault text-xl"></i>
+          <div>
+            <div class="flex items-center gap-3 mb-4 mt-1">
+              <div class="p-3 bg-emerald-600 text-white rounded-xl shadow-sm">
+                <i class="fa-solid fa-vault text-xl"></i>
+              </div>
+              <div>
+                <h3 class="font-bold text-slate-800 text-sm sm:text-base">Kas Lorong</h3>
+                <p class="text-xs text-slate-500">Rekening Utama Kas</p>
+              </div>
             </div>
-            <div>
-              <h3 class="font-bold text-slate-800">Kas Lorong (SeaBank)</h3>
-              <p class="text-xs text-slate-500">Rekening Utam Kas</p>
+            
+            <div class="bg-white/90 backdrop-blur-sm p-3.5 rounded-xl border border-emerald-200/60 space-y-2 text-xs">
+              <p class="font-medium text-slate-600">Nomor Rekening:</p>
+              <div class="flex justify-between items-center bg-slate-50 p-2.5 rounded-lg border border-slate-200">
+                <span class="font-mono font-bold text-emerald-600 text-sm">901969703344</span>
+                <button onclick="copyToClipboard('901969703344')" class="bg-emerald-100 hover:bg-emerald-200 text-emerald-700 px-2 py-1 rounded-md text-xs font-semibold flex items-center gap-1 transition-all">
+                  <i class="fa-regular fa-copy"></i>
+                </button>
+              </div>
+              <p class="text-slate-600 pt-1">a/n: <span class="font-bold text-slate-800 text-xs">R Hilman Nur Gurdian</span></p>
             </div>
-          </div>
-          <div class="bg-white/80 p-3 rounded-lg border border-emerald-100 space-y-1 text-xs">
-            <p class="font-medium text-slate-700">No. Rekening:</p>
-            <div class="flex justify-between items-center bg-white p-2 rounded border border-slate-200">
-              <span class="font-mono font-bold text-emerald-600 text-sm">901969703344</span>
-              <button onclick="copyToClipboard('901969703344')" class="text-slate-400 hover:text-emerald-600 text-xs flex items-center gap-1">
-                <i class="fa-regular fa-copy"></i> Salin
-              </button>
-            </div>
-            <p class="text-slate-600 mt-1">a/n <span class="font-semibold text-slate-800">R Hilman Nur Gurdian</span></p>
           </div>
         </div>
+
       </div>
     </section>
 
-    <!-- Main Content Grid: Form Payment & Status Table -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <!-- Main Content Section: Rekening Utama & Informasi -->
+    <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       
-      <!-- Payment Details & Konfirmasi Card -->
-      <div class="lg:col-span-1 space-y-6">
-        
-        <!-- Info Rekening Card -->
-        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
-          <h2 class="text-md font-bold text-slate-800 mb-4 flex items-center gap-2">
-            <i class="fa-solid fa-credit-card text-orange-500"></i> Rekening Tujuan Transfer Warga
-          </h2>
-          
-          <div class="bg-gradient-to-r from-orange-500 to-amber-600 rounded-xl p-5 text-white shadow-md relative overflow-hidden">
-            <div class="absolute -right-4 -bottom-4 opacity-15 text-white">
-              <i class="fa-solid fa-building-columns text-8xl"></i>
-            </div>
-            <div class="flex justify-between items-start mb-4">
-              <span class="font-extrabold text-lg tracking-wider">SeaBank</span>
-              <span class="text-xs bg-white/20 px-2 py-1 rounded backdrop-blur-sm">Penampung</span>
-            </div>
-            <div class="space-y-1 mb-4">
-              <p class="text-xs text-orange-100">Nomor Rekening</p>
-              <div class="flex items-center gap-2">
-                <p class="font-mono text-xl font-bold tracking-wide">9017 6411 7145</p>
-                <button onclick="copyToClipboard('901764117145')" class="hover:text-orange-200 active:scale-95 transition-all">
-                  <i class="fa-regular fa-copy text-sm"></i>
-                </button>
+      <!-- Card Rekening Tujuan (Highlight) -->
+      <div class="lg:col-span-2 bg-white p-6 rounded-2xl shadow-sm border border-slate-200/80 flex flex-col justify-between">
+        <div>
+          <div class="flex items-center justify-between pb-4 mb-4 border-b border-slate-100">
+            <h2 class="text-md font-bold text-slate-800 flex items-center gap-2">
+              <i class="fa-solid fa-credit-card text-orange-500"></i> Rekening Tujuan Transfer Warga
+            </h2>
+            <span class="text-[11px] bg-orange-100 text-orange-700 px-2.5 py-1 rounded-full font-semibold">Tujuan Transfer</span>
+          </div>
+
+          <!-- Digital Card ATM Preview -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <!-- SeaBank Card Visual -->
+            <div class="bg-gradient-to-br from-orange-500 via-orange-600 to-amber-600 rounded-2xl p-5 text-white shadow-md relative overflow-hidden flex flex-col justify-between min-h-[190px]">
+              <div class="absolute -right-4 -bottom-6 opacity-15 text-white pointer-events-none">
+                <i class="fa-solid fa-building-columns text-9xl"></i>
+              </div>
+              
+              <div class="flex justify-between items-start z-10">
+                <span class="font-extrabold text-xl tracking-wider">SeaBank</span>
+                <span class="text-[10px] uppercase font-semibold bg-white/20 px-2 py-0.5 rounded-md backdrop-blur-sm border border-white/20">Rekening Penampung</span>
+              </div>
+
+              <div class="my-4 z-10">
+                <p class="text-[11px] text-orange-100 font-medium mb-1">Nomor Rekening</p>
+                <div class="flex items-center justify-between bg-black/10 backdrop-blur-sm px-3 py-2 rounded-xl border border-white/10">
+                  <p class="font-mono text-lg font-bold tracking-wider">9017 6411 7145</p>
+                  <button onclick="copyToClipboard('901764117145')" class="p-1.5 hover:bg-white/20 active:scale-95 rounded-lg transition-all text-white" title="Salin Rekening">
+                    <i class="fa-regular fa-copy text-base"></i>
+                  </button>
+                </div>
+              </div>
+
+              <div class="z-10 flex justify-between items-end">
+                <div>
+                  <p class="text-[10px] text-orange-100 uppercase font-medium">Atas Nama</p>
+                  <p class="font-bold text-sm tracking-wide">BUCE. I. F. PESIWARISSA</p>
+                </div>
+                <i class="fa-solid fa-wifi rotate-90 text-white/50 text-lg"></i>
               </div>
             </div>
-            <div>
-              <p class="text-xs text-orange-100">Atas Nama</p>
-              <p class="font-semibold text-sm">Buce. I. F. Pesiwarissa</p>
+
+            <!-- Detail & Instruksi -->
+            <div class="flex flex-col justify-between space-y-3 bg-slate-50 p-4 rounded-xl border border-slate-200/80">
+              <div class="space-y-2">
+                <h3 class="text-xs font-bold text-slate-700 uppercase tracking-wider">Petunjuk Transfer:</h3>
+                <ul class="text-xs text-slate-600 space-y-1.5 list-disc list-inside">
+                  <li>Gunakan kode bank <span class="font-mono font-bold text-slate-800">535</span> jika transfer dari bank lain.</li>
+                  <li>Pastikan nama penerima adalah <span class="font-semibold text-slate-800">Buce. I. F. Pesiwarissa</span>.</li>
+                  <li>Simpan bukti transaksi untuk konfirmasi jika diperlukan.</li>
+                </ul>
+              </div>
+              
+              <button onclick="copyToClipboard('901764117145')" class="w-full bg-orange-500 hover:bg-orange-600 active:scale-98 text-white font-semibold py-2.5 px-4 rounded-xl text-xs flex items-center justify-center gap-2 shadow-sm transition-all">
+                <i class="fa-regular fa-copy text-sm"></i> Salin Nomor Rekening
+              </button>
             </div>
           </div>
+        </div>
 
-          <div class="mt-4 p-3 bg-blue-50 rounded-lg border border-blue-100 text-xs text-blue-800 flex gap-2.5">
-            <i class="fa-solid fa-circle-info text-blue-500 text-base flex-shrink-0 mt-0.5"></i>
-            <p>Setiap dana yang masuk akan langsung disetorkan secara berkala ke <b>Kas Lorong</b> (SeaBank: 901969703344 a/n R Hilman Nur Gurdian).</p>
-          </div>
+        <div class="mt-5 p-3.5 bg-blue-50/80 rounded-xl border border-blue-100 text-xs text-blue-900 flex gap-3 items-start">
+          <i class="fa-solid fa-circle-info text-blue-600 text-base flex-shrink-0 mt-0.5"></i>
+          <p class="leading-relaxed">
+            <b>Catatan Transparansi:</b> Setiap dana iuran bulanan yang masuk ke rekening penampung akan disetorkan secara berkala ke <b>Kas Utama Lorong</b> (SeaBank: <span class="font-mono font-semibold">901969703344</span> a/n R Hilman Nur Gurdian).
+          </p>
         </div>
       </div>
-    </div>
+
+      <!-- Quick Info / Status Card -->
+      <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200/80 flex flex-col justify-between">
+        <div>
+          <h2 class="text-md font-bold text-slate-800 pb-3 mb-4 border-b border-slate-100 flex items-center gap-2">
+            <i class="fa-solid fa-circle-check text-emerald-500"></i> Informasi & Bantuan
+          </h2>
+
+          <div class="space-y-4">
+            <div class="p-3.5 bg-emerald-50 rounded-xl border border-emerald-100 text-xs text-emerald-900 space-y-1">
+              <p class="font-bold flex items-center gap-1.5">
+                <i class="fa-solid fa-clock-rotate-left"></i> Konfirmasi Otomatis
+              </p>
+              <p class="text-emerald-800 leading-relaxed">
+                Pembayaran yang dilakukan via transfer akan tercatat dalam rekapitulasi bulanan kas warga Tulip IX.
+              </p>
+            </div>
+
+            <div class="p-3.5 bg-slate-50 rounded-xl border border-slate-200 text-xs text-slate-700 space-y-1">
+              <p class="font-bold text-slate-800 flex items-center gap-1.5">
+                <i class="fa-solid fa-headset text-blue-600"></i> Butuh Kendala Pembayaran?
+              </p>
+              <p class="text-slate-600 leading-relaxed">
+                Hubungi Humas Tulip IX jika terdapat kendala transfer atau perubahan data warga.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="pt-4 border-t border-slate-100 text-center">
+          <p class="text-[11px] text-slate-400">Kas Lorong Tulip IX &copy; 2026</p>
+        </div>
+      </div>
+
+    </section>
+
   </main>
 
+  <!-- Script -->
   <script>
     function copyToClipboard(text) {
-      navigator.clipboard.writeText(text);
-      alert('Nomor Rekening berhasil disalin: ' + text);
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(text).then(() => {
+          alert('Nomor Rekening berhasil disalin: ' + text);
+        }).catch(() => {
+          fallbackCopyTextToClipboard(text);
+        });
+      } else {
+        fallbackCopyTextToClipboard(text);
+      }
     }
 
-    function handleFormSubmit(e) {
-      e.preventDefault();
-      alert('Terima kasih! Bukti konfirmasi pembayaran iuran Anda telah terkirim.');
+    function fallbackCopyTextToClipboard(text) {
+      const textArea = document.createElement("textarea");
+      textArea.value = text;
+      textArea.style.position = "fixed";
+      document.body.appendChild(textArea);
+      textArea.focus();
+      textArea.select();
+      try {
+        document.execCommand('copy');
+        alert('Nomor Rekening berhasil disalin: ' + text);
+      } catch (err) {
+        alert('Gagal menyalin nomor rekening.');
+      }
+      document.body.removeChild(textArea);
     }
   </script>
 </body>
