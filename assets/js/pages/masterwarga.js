@@ -7,11 +7,13 @@ function refreshAllUI() {
 function getFilteredWarga() {
     const search = (document.getElementById('searchWarga')?.value || '').toLowerCase();
     const filterIuran = document.getElementById('filterStatusIuran')?.value || '';
+    const filterHunian = document.getElementById('filterStatusHunian')?.value || '';
 
     let list = [...(window.dataStore.warga || [])];
 
     if (search) list = list.filter(w => (w.nama || '').toLowerCase().includes(search) || (w.blok || '').toLowerCase().includes(search));
     if (filterIuran) list = list.filter(w => w.statusIuran === filterIuran);
+    if (filterHunian) list = list.filter(w => w.statusHunian === filterHunian);
 
     return list.sort((a, b) => {
         return (a.nomorRumah || a.blok || '').localeCompare(
@@ -83,7 +85,8 @@ function getWargaExportRows() {
 
 function getWargaExportFilename(extension) {
     const filterIuran = document.getElementById('filterStatusIuran')?.value || 'semua-status';
-    return `master-warga-${filterIuran.toLowerCase()}.${extension}`;
+    const filterHunian = document.getElementById('filterStatusHunian')?.value || 'semua-hunian';
+    return `master-warga-${filterIuran.toLowerCase()}-${filterHunian.toLowerCase().replaceAll(' ', '-')}.${extension}`;
 }
 
 function downloadWargaExcel() {
