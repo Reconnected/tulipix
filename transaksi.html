@@ -13,6 +13,11 @@
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
+    <!-- Library ekspor Excel dan PDF -->
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+
     <!-- Google Fonts (Inter) -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap">
 
@@ -117,10 +122,20 @@
                         <input type="month" id="filterTxBulan" onchange="renderTransaksiTable()" class="px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
                     </div>
                     
-                    <button onclick="openModalTransaksi()" class="admin-only hidden bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-xl text-sm font-medium items-center justify-center space-x-2 shadow-lg shadow-emerald-600/20 transition">
-                        <i class="fa-solid fa-circle-plus"></i>
-                        <span>Catat Transaksi Baru</span>
-                    </button>
+                    <div class="flex flex-wrap items-center justify-end gap-2">
+                        <button onclick="downloadTransaksiExcel()" title="Download Excel" class="bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 px-3 py-2 rounded-xl text-sm font-medium inline-flex items-center space-x-2 transition">
+                            <i class="fa-solid fa-file-excel"></i>
+                            <span>Excel</span>
+                        </button>
+                        <button onclick="downloadTransaksiPdf()" title="Download PDF" class="bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 px-3 py-2 rounded-xl text-sm font-medium inline-flex items-center space-x-2 transition">
+                            <i class="fa-solid fa-file-pdf"></i>
+                            <span>PDF</span>
+                        </button>
+                        <button onclick="openModalTransaksi()" class="admin-only hidden bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-xl text-sm font-medium items-center justify-center space-x-2 shadow-lg shadow-emerald-600/20 transition">
+                            <i class="fa-solid fa-circle-plus"></i>
+                            <span>Catat Transaksi Baru</span>
+                        </button>
+                    </div>
                 </div>
 
                 <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">

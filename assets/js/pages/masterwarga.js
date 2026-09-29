@@ -4,17 +4,29 @@ function refreshAllUI() {
     renderWargaTable();
 }
 
+function getFilteredWarga() {
+    const search = (document.getElementById('searchWarga')?.value || '').toLowerCase();
+    const filterIuran = document.getElementById('filterStatusIuran')?.value || '';
+
+    let list = [...(window.dataStore.warga || [])];
+
+    if (search) list = list.filter(w => (w.nama || '').toLowerCase().includes(search) || (w.blok || '').toLowerCase().includes(search));
+    if (filterIuran) list = list.filter(w => w.statusIuran === filterIuran);
+
+    return list.sort((a, b) => {
+        return (a.nomorRumah || a.blok || '').localeCompare(
+            (b.nomorRumah || b.blok || ''),
+            undefined,
+            { numeric: true, sensitivity: 'base' }
+        );
+    });
+}
+
 function renderWargaTable() {
     const tbody = document.getElementById('wargaTableBody');
     if (!tbody) return;
 
-    const search = (document.getElementById('searchWarga')?.value || '').toLowerCase();
-    const filterIuran = document.getElementById('filterStatusIuran')?.value || '';
-
-    let list = window.dataStore.warga || [];
-
-    if (search) list = list.filter(w => w.nama.toLowerCase().includes(search) || w.blok.toLowerCase().includes(search));
-    if (filterIuran) list = list.filter(w => w.statusIuran === filterIuran);
+    const list = getFilteredWarga();
 
     tbody.innerHTML = '';
 
@@ -22,15 +34,6 @@ function renderWargaTable() {
         tbody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-slate-400 italic">Data warga tidak ditemukan.</td></tr>`;
         return;
     }
-    // --- OPSI SORTING NOMOR RUMAH / BLOK ---
-    list.sort((a, b) => {
-    // Gunakan 'numeric: true' agar "A-2" datang SEBELUM "A-10"
-    return (a.nomorRumah || a.blok || '').localeCompare(
-        (b.nomorRumah || b.blok || ''), 
-        undefined, 
-        { numeric: true, sensitivity: 'base' }
-    );
-    });
     const isAdmin = window.isAdmin;
 
     list.forEach(w => {
@@ -61,6 +64,61 @@ function renderWargaTable() {
             </tr>
         `;
     });
+}
+
+function getWargaExportRows() {
+    return getFilteredWarga().map(w => ({
+        'No. Rumah/Blok': w.blok || '',
+        'Kepala Keluarga': w.nama || '',
+        'Status Hunian': w.statusHunian || '',
+        'No. Telephone / HP': w.hp || '',
+        'Status Iuran Bulanan': w.statusIuran || ''
+    }));
+}
+
+function getWargaExportFilename(extension) {
+    const filterIuran = document.getElementById('filterStatusIuran')?.value || 'semua-status';
+    return `master-warga-${filterIuran.toLowerCase()}.${extension}`;
+}
+
+function downloadWargaExcel() {
+    if (typeof XLSX === 'undefined') {
+        window.showToast('Library Excel belum tersedia.', true);
+        return;
+    }
+
+    const worksheet = XLSX.utils.json_to_sheet(getWargaExportRows());
+    worksheet['!cols'] = [{ wch: 18 }, { wch: 28 }, { wch: 18 }, { wch: 20 }, { wch: 24 }];
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Master Warga');
+    XLSX.writeFile(workbook, getWargaExportFilename('xlsx'));
+}
+
+function downloadWargaPdf() {
+    const pdfConstructor = window.jspdf?.jsPDF;
+    if (!pdfConstructor) {
+        window.showToast('Library PDF belum tersedia.', true);
+        return;
+    }
+
+    const rows = getWargaExportRows();
+    const pdf = new pdfConstructor({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+    pdf.setFontSize(16);
+    pdf.text('Master Data Warga Tulip IX', 14, 15);
+    pdf.setFontSize(10);
+    pdf.text('Daftar warga sesuai filter yang dipilih', 14, 22);
+    pdf.autoTable({
+        startY: 28,
+        head: [['No. Rumah/Blok', 'Kepala Keluarga', 'Status Hunian', 'No. Telephone / HP', 'Status Iuran Bulanan']],
+        body: rows.map(row => [row['No. Rumah/Blok'], row['Kepala Keluarga'], row['Status Hunian'], row['No. Telephone / HP'], row['Status Iuran Bulanan']]),
+        styles: { fontSize: 9, cellPadding: 3 },
+        headStyles: { fillColor: [15, 118, 110] },
+        didDrawPage: data => {
+            pdf.setFontSize(8);
+            pdf.text(`Halaman ${data.pageNumber}`, 196, 285, { align: 'right' });
+        }
+    });
+    pdf.save(getWargaExportFilename('pdf'));
 }
 
 function openModalWarga(id = null) {

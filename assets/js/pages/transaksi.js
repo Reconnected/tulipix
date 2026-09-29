@@ -15,21 +15,25 @@ function populateCategoryFilter() {
     });
 }
 
-function renderTransaksiTable() {
-    const tbody = document.getElementById('transaksiTableBody');
-    if (!tbody) return;
-
+function getFilteredTransaksi() {
     const tipe = document.getElementById('filterTxTipe')?.value || '';
     const kat = document.getElementById('filterTxKategori')?.value || '';
     const bulan = document.getElementById('filterTxBulan')?.value || '';
 
-    let list = window.dataStore.transaksi || [];
+    let list = [...(window.dataStore.transaksi || [])];
 
     if (tipe) list = list.filter(t => t.tipe === tipe);
     if (kat) list = list.filter(t => t.kategoriId === kat);
     if (bulan) list = list.filter(t => t.tanggal && t.tanggal.startsWith(bulan));
 
-    list.sort((a, b) => new Date(b.tanggal) - new Date(a.tanggal));
+    return list.sort((a, b) => new Date(b.tanggal) - new Date(a.tanggal));
+}
+
+function renderTransaksiTable() {
+    const tbody = document.getElementById('transaksiTableBody');
+    if (!tbody) return;
+
+    const list = getFilteredTransaksi();
 
     tbody.innerHTML = '';
 
@@ -73,6 +77,70 @@ function renderTransaksiTable() {
             </tr>
         `;
     });
+}
+
+function getTransaksiExportRows() {
+    return getFilteredTransaksi().map(t => {
+        const katObj = window.dataStore.kategori.find(k => k.id === t.kategoriId);
+        const wargaObj = window.dataStore.warga.find(w => w.id === t.wargaId);
+
+        return {
+            Tanggal: t.tanggal || '',
+            Jenis: t.tipe || '',
+            Kategori: katObj ? katObj.nama : 'Umum',
+            'Keterangan / Warga': [t.keterangan || '-', wargaObj ? `${wargaObj.nama} (${wargaObj.blok})` : ''].filter(Boolean).join(' - '),
+            'Jumlah (Rp)': Number(t.jumlah) || 0
+        };
+    });
+}
+
+function getTransaksiExportFilename(extension) {
+    const bulan = document.getElementById('filterTxBulan')?.value || 'semua-waktu';
+    return `transaksi-kas-${bulan}.${extension}`;
+}
+
+function downloadTransaksiExcel() {
+    if (typeof XLSX === 'undefined') {
+        window.showToast('Library Excel belum tersedia.', true);
+        return;
+    }
+
+    const worksheet = XLSX.utils.json_to_sheet(getTransaksiExportRows());
+    worksheet['!cols'] = [{ wch: 14 }, { wch: 16 }, { wch: 24 }, { wch: 42 }, { wch: 18 }];
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Transaksi');
+    XLSX.writeFile(workbook, getTransaksiExportFilename('xlsx'));
+}
+
+function downloadTransaksiPdf() {
+    const pdfConstructor = window.jspdf?.jsPDF;
+    if (!pdfConstructor) {
+        window.showToast('Library PDF belum tersedia.', true);
+        return;
+    }
+
+    const rows = getTransaksiExportRows();
+    const pdf = new pdfConstructor({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+    const bulan = document.getElementById('filterTxBulan')?.value || '';
+    const periodTitle = bulan ? `Periode ${bulan}` : 'Semua Periode';
+
+    pdf.setFontSize(16);
+    pdf.text('Catatan Transaksi Kas Warga Tulip IX', 14, 15);
+    pdf.setFontSize(10);
+    pdf.text(periodTitle, 14, 22);
+    pdf.autoTable({
+        startY: 28,
+        head: [['Tanggal', 'Jenis', 'Kategori', 'Keterangan / Warga', 'Jumlah (Rp)']],
+        body: rows.map(row => [row.Tanggal, row.Jenis, row.Kategori, row['Keterangan / Warga'], formatRupiah(row['Jumlah (Rp)'])]),
+        styles: { fontSize: 9, cellPadding: 3 },
+        headStyles: { fillColor: [15, 118, 110] },
+        columnStyles: { 4: { halign: 'right' } },
+        didDrawPage: data => {
+            pdf.setFontSize(8);
+            pdf.text(`Halaman ${data.pageNumber}`, 196, 285, { align: 'right' });
+        }
+    });
+    pdf.save(getTransaksiExportFilename('pdf'));
 }
 
 function populateModalCategoryDropdown() {
