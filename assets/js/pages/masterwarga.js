@@ -38,12 +38,17 @@ function renderWargaTable() {
 
     list.forEach(w => {
         const isLunas = w.statusIuran === 'Lunas';
+        const statusHunianClass = w.statusHunian === 'Tetap'
+            ? 'bg-blue-100 text-blue-800'
+            : w.statusHunian === 'Kontrak'
+                ? 'bg-orange-100 text-orange-800'
+                : 'bg-slate-100 text-slate-700';
         tbody.innerHTML += `
             <tr class="hover:bg-slate-50 transition">
                 <td class="p-4 font-semibold text-slate-800">${w.blok}</td>
                 <td class="p-4 font-medium text-slate-900">${w.nama}</td>
                 <td class="p-4">
-                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${w.statusHunian === 'Tetap' ? 'bg-blue-100 text-blue-800' : 'bg-orange-100 text-orange-800'}">
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${statusHunianClass}">
                         ${w.statusHunian}
                     </span>
                 </td>
