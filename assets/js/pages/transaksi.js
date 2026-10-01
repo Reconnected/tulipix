@@ -1,5 +1,8 @@
 // Halaman Transaksi: daftar, filter, catat/edit/hapus transaksi
 
+const TRANSAKSI_PAGE_SIZE = 25;
+let transaksiCurrentPage = 1;
+
 function refreshAllUI() {
     renderTransaksiTable();
     populateCategoryFilter();
@@ -29,11 +32,48 @@ function getFilteredTransaksi() {
     return list.sort((a, b) => new Date(b.tanggal) - new Date(a.tanggal));
 }
 
+function filterTransaksiChanged() {
+    transaksiCurrentPage = 1;
+    renderTransaksiTable();
+}
+
+function changeTransaksiPage(page) {
+    transaksiCurrentPage = page;
+    renderTransaksiTable();
+}
+
+function renderTransaksiPagination(totalItems) {
+    const pagination = document.getElementById('transaksiPagination');
+    if (!pagination) return;
+
+    const totalPages = Math.max(1, Math.ceil(totalItems / TRANSAKSI_PAGE_SIZE));
+    transaksiCurrentPage = Math.min(Math.max(transaksiCurrentPage, 1), totalPages);
+
+    if (totalItems === 0) {
+        pagination.innerHTML = '';
+        return;
+    }
+
+    const firstItem = (transaksiCurrentPage - 1) * TRANSAKSI_PAGE_SIZE + 1;
+    const lastItem = Math.min(transaksiCurrentPage * TRANSAKSI_PAGE_SIZE, totalItems);
+    pagination.innerHTML = `
+        <span>Menampilkan ${firstItem}–${lastItem} dari ${totalItems} transaksi</span>
+        <div class="flex items-center gap-2">
+            <button onclick="changeTransaksiPage(${transaksiCurrentPage - 1})" ${transaksiCurrentPage === 1 ? 'disabled' : ''} class="px-3 py-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed">Sebelumnya</button>
+            <span>Halaman ${transaksiCurrentPage} dari ${totalPages}</span>
+            <button onclick="changeTransaksiPage(${transaksiCurrentPage + 1})" ${transaksiCurrentPage === totalPages ? 'disabled' : ''} class="px-3 py-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed">Berikutnya</button>
+        </div>
+    `;
+}
+
 function renderTransaksiTable() {
     const tbody = document.getElementById('transaksiTableBody');
     if (!tbody) return;
 
     const list = getFilteredTransaksi();
+    renderTransaksiPagination(list.length);
+    const startIndex = (transaksiCurrentPage - 1) * TRANSAKSI_PAGE_SIZE;
+    const pageItems = list.slice(startIndex, startIndex + TRANSAKSI_PAGE_SIZE);
 
     tbody.innerHTML = '';
 
@@ -44,7 +84,7 @@ function renderTransaksiTable() {
 
     const isAdmin = window.isAdmin;
 
-    list.forEach(t => {
+    pageItems.forEach(t => {
         const isMasuk = t.tipe === 'Pemasukan';
         const katObj = window.dataStore.kategori.find(k => k.id === t.kategoriId);
         const wargaObj = window.dataStore.warga.find(w => w.id === t.wargaId);

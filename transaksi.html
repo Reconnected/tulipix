@@ -111,15 +111,15 @@
             <section id="view-transaksi" class="space-y-6">
                 <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm">
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 flex-1">
-                        <select id="filterTxTipe" onchange="renderTransaksiTable()" class="px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                        <select id="filterTxTipe" onchange="filterTransaksiChanged()" class="px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
                             <option value="">Semua Jenis</option>
                             <option value="Pemasukan">Pemasukan (Kas Masuk)</option>
                             <option value="Pengeluaran">Pengeluaran (Kas Keluar)</option>
                         </select>
-                        <select id="filterTxKategori" onchange="renderTransaksiTable()" class="px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                        <select id="filterTxKategori" onchange="filterTransaksiChanged()" class="px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
                             <option value="">Semua Kategori</option>
                         </select>
-                        <input type="month" id="filterTxBulan" onchange="renderTransaksiTable()" class="px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                        <input type="month" id="filterTxBulan" onchange="filterTransaksiChanged()" class="px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
                     </div>
                     
                     <div class="flex flex-wrap items-center justify-end gap-2">
@@ -137,6 +137,8 @@
                         </button>
                     </div>
                 </div>
+
+                <div id="transaksiPagination" class="no-print flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-sm text-slate-600" aria-live="polite"></div>
 
                 <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
                     <div class="overflow-x-auto">
