@@ -2,6 +2,33 @@
 
 let saranNotificationTimeout;
 
+function openSaranSuccessModal() {
+    const modal = document.getElementById('saranSuccessModal');
+    const closeButton = document.getElementById('btnCloseSaranSuccess');
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+    closeButton.focus();
+}
+
+function closeSaranSuccessModal() {
+    const modal = document.getElementById('saranSuccessModal');
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+    document.getElementById('isiSaran').focus();
+}
+
+document.getElementById('btnCloseSaranSuccess')?.addEventListener('click', closeSaranSuccessModal);
+
+document.getElementById('saranSuccessModal')?.addEventListener('click', event => {
+    if (event.target === event.currentTarget) closeSaranSuccessModal();
+});
+
+document.addEventListener('keydown', event => {
+    if (event.key === 'Escape' && !document.getElementById('saranSuccessModal').classList.contains('hidden')) {
+        closeSaranSuccessModal();
+    }
+});
+
 function showSaranNotification(message, isError = false) {
     const notification = document.getElementById('saranNotification');
     const icon = document.getElementById('saranNotificationIcon');
@@ -34,7 +61,7 @@ document.getElementById('formSaran')?.addEventListener('submit', async event => 
     try {
         await window.submitAnonymousSuggestion(text);
         input.value = '';
-        showSaranNotification('Terima kasih. Saran Anda telah dikirim secara anonim.');
+        openSaranSuccessModal();
     } catch (error) {
         showSaranNotification(`Saran gagal dikirim: ${error.message}`, true);
     } finally {

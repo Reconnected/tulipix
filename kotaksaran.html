@@ -52,6 +52,19 @@
         <span id="saranNotificationMessage"></span>
     </div>
 
+    <div id="saranSuccessModal" role="alertdialog" aria-modal="true" aria-labelledby="saranSuccessTitle" aria-describedby="saranSuccessMessage" class="fixed inset-0 z-[60] hidden items-center justify-center bg-slate-950/60 backdrop-blur-sm p-4">
+        <div class="w-full max-w-sm rounded-3xl bg-white p-7 text-center shadow-2xl">
+            <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-emerald-100 text-emerald-600">
+                <i class="fa-solid fa-check text-3xl"></i>
+            </div>
+            <h2 id="saranSuccessTitle" class="mt-5 text-xl font-extrabold text-slate-900">Saran Terkirim!</h2>
+            <p id="saranSuccessMessage" class="mt-2 text-sm leading-relaxed text-slate-600">Terima kasih. Saran Anda telah dikirim secara anonim dan akan diteruskan kepada pengurus.</p>
+            <button id="btnCloseSaranSuccess" type="button" class="mt-6 w-full rounded-xl bg-emerald-600 px-5 py-3 text-sm font-bold text-white shadow-lg shadow-emerald-600/20 transition hover:bg-emerald-700 focus:outline-none focus:ring-4 focus:ring-emerald-200">
+                Mengerti
+            </button>
+        </div>
+    </div>
+
     <script src="assets/js/common.js"></script>
     <script src="assets/js/pages/kotaksaran.js"></script>
     <script type="module" src="assets/js/firebase.js"></script>
