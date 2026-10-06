@@ -35,7 +35,7 @@ Domain hosting harus ada di Firebase Console > Authentication > Settings > Autho
 - Tiap halaman hanya membaca koleksi Firestore yang ia butuhkan (atribut `data-collections` di `<body>`).
 - Modul Program Kerja dapat dibaca warga dan dikelola admin; datanya disimpan pada koleksi Firestore `programkerja`.
 - Kotak Saran Digital menerima saran tanpa nama/email. Saran hanya ditampilkan di Dashboard ketika admin login; halaman pengiriman tidak membaca daftar saran.
-- Terapkan `firestore.rules` pada Firebase Console > Firestore Database > Rules agar warga hanya dapat mengirim saran, bukan membaca saran yang telah masuk. Hak admin mengikuti pola aplikasi saat ini: akun Firebase yang berhasil login.
+- Publikasikan isi `firestore.rules` di Firebase Console > Firestore Database > Rules. Aturan memberi akses `create` anonim ke koleksi `kotaksaran`, tetapi hanya akun yang login yang dapat membaca atau menghapus saran. Jika tombol kirim menghasilkan `Missing or insufficient permission`, aturan tersebut belum dipublikasikan pada proyek Firebase yang dipakai aplikasi.
 - Menambah menu: buat halaman baru, tambahkan link di sidebar semua halaman, dan file JS di `assets/js/pages/`.
 - Keamanan: status "admin" di sisi klien hanya untuk tampilan. Pastikan Firestore Security Rules membatasi
   tulis/hapus hanya untuk akun admin Anda, dan nonaktifkan pendaftaran akun baru bila tidak dipakai.
