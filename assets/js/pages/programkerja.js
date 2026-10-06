@@ -5,6 +5,7 @@ const programStatusStyles = {
     Berjalan: 'bg-blue-50 text-blue-700 border-blue-200',
     Selesai: 'bg-emerald-50 text-emerald-700 border-emerald-200'
 };
+const programStatusOrder = { Pending: 0, Berjalan: 1, Selesai: 2 };
 
 function refreshAllUI() {
     renderProgramKerja();
@@ -26,7 +27,10 @@ function renderProgramKerja() {
     const filteredPrograms = programs.filter(program => {
         const matchesSearch = `${program.nama || ''} ${program.deskripsi || ''}`.toLocaleLowerCase('id').includes(search);
         return matchesSearch && (!selectedStatus || program.status === selectedStatus);
-    }).sort((a, b) => (a.nama || '').localeCompare(b.nama || '', 'id'));
+    }).sort((a, b) => {
+        const statusOrder = (programStatusOrder[a.status] ?? 3) - (programStatusOrder[b.status] ?? 3);
+        return statusOrder || (a.nama || '').localeCompare(b.nama || '', 'id');
+    });
 
     container.replaceChildren();
     if (!filteredPrograms.length) {
