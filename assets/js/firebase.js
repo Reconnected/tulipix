@@ -14,7 +14,7 @@ let currentUser = null;
 let pendingDeleteInfo = null;
 
 // Data Store Global
-window.dataStore = { warga: [], kategori: [], transaksi: [] };
+window.dataStore = { warga: [], kategori: [], transaksi: [], programkerja: [] };
 window.isAdmin = false;
 
 // Realtime Data Sync from Firestore
