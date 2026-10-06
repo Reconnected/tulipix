@@ -1,0 +1,39 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isAdmin() {
+      return request.auth != null;
+    }
+
+    match /kotaksaran/{suggestionId} {
+      allow create: if request.resource.data.keys().hasAll(['text', 'createdAt'])
+        && request.resource.data.keys().hasOnly(['text', 'createdAt'])
+        && request.resource.data.text is string
+        && request.resource.data.text.size() >= 3
+        && request.resource.data.text.size() <= 2000
+        && request.resource.data.createdAt is timestamp;
+      allow read, delete: if isAdmin();
+      allow update: if false;
+    }
+
+    match /warga/{documentId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /kategori/{documentId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /transaksi/{documentId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /programkerja/{documentId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+  }
+}

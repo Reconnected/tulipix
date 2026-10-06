@@ -22,7 +22,7 @@
     <!-- Custom CSS -->
     <link rel="stylesheet" href="assets/css/style.css">
 </head>
-<body class="bg-slate-50 text-slate-800 font-sans antialiased min-h-screen flex flex-col md:flex-row" data-page="dashboard" data-collections="warga,kategori,transaksi">
+<body class="bg-slate-50 text-slate-800 font-sans antialiased min-h-screen flex flex-col md:flex-row" data-page="dashboard" data-collections="warga,kategori,transaksi" data-admin-collections="kotaksaran">
 
     <!-- Sidebar Navigation -->
     <aside id="sidebar" class="no-print bg-slate-900 text-slate-300 fixed md:static inset-y-0 left-0 w-64 -translate-x-full md:translate-x-0 flex-shrink-0 transition-transform duration-300 z-40 flex flex-col min-h-screen">
@@ -183,6 +183,19 @@
                             <!-- Populated via JS -->
                         </div>
                     </div>
+                </div>
+            </section>
+
+            <section id="dashboardSaranPanel" class="admin-only hidden bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-4 mb-4">
+                    <div>
+                        <h3 class="font-bold text-slate-800 text-base"><i class="fa-solid fa-lock text-emerald-600 mr-2"></i>Saran Warga</h3>
+                        <p class="text-xs text-slate-500 mt-1">Saran anonim hanya ditampilkan di dashboard saat admin login.</p>
+                    </div>
+                    <span id="jumlahSaranDashboard" class="text-xs font-semibold text-slate-500"></span>
+                </div>
+                <div id="daftarSaranDashboard" class="space-y-3 max-h-[32rem] overflow-y-auto">
+                    <p class="text-xs text-slate-400 italic">Memuat saran...</p>
                 </div>
             </section>
         </main>

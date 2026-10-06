@@ -4,6 +4,61 @@ let myFinanceChart = null;
 
 function refreshAllUI() {
     renderDashboard();
+    renderDashboardSuggestions();
+}
+
+function renderDashboardSuggestions() {
+    const container = document.getElementById('daftarSaranDashboard');
+    if (!container || !window.isAdmin) return;
+
+    const suggestions = [...(window.dataStore.kotaksaran || [])].sort((a, b) => {
+        const dateA = a.createdAt?.toDate ? a.createdAt.toDate().getTime() : 0;
+        const dateB = b.createdAt?.toDate ? b.createdAt.toDate().getTime() : 0;
+        return dateB - dateA;
+    });
+    document.getElementById('jumlahSaranDashboard').textContent = `${suggestions.length} saran`;
+    container.replaceChildren();
+
+    if (!suggestions.length) {
+        const empty = document.createElement('p');
+        empty.className = 'text-sm text-slate-500 italic py-3';
+        empty.textContent = 'Belum ada saran yang masuk.';
+        container.append(empty);
+        return;
+    }
+
+    suggestions.forEach(suggestion => {
+        const card = document.createElement('article');
+        card.className = 'p-4 bg-slate-50 border border-slate-200 rounded-xl';
+
+        const header = document.createElement('div');
+        header.className = 'flex items-start justify-between gap-3';
+        const date = document.createElement('time');
+        date.className = 'text-[11px] text-slate-400';
+        if (suggestion.createdAt?.toDate) {
+            const value = suggestion.createdAt.toDate();
+            date.dateTime = value.toISOString();
+            date.textContent = new Intl.DateTimeFormat('id-ID', {
+                dateStyle: 'medium',
+                timeStyle: 'short'
+            }).format(value);
+        } else {
+            date.textContent = 'Waktu belum tersedia';
+        }
+
+        const deleteButton = document.createElement('button');
+        deleteButton.type = 'button';
+        deleteButton.className = 'text-rose-600 hover:bg-rose-50 px-2 py-1 rounded-lg text-xs font-semibold';
+        deleteButton.innerHTML = '<i class="fa-solid fa-trash mr-1"></i> Hapus';
+        deleteButton.addEventListener('click', () => window.confirmDelete('kotaksaran', suggestion.id, 'saran anonim'));
+        header.append(date, deleteButton);
+
+        const text = document.createElement('p');
+        text.className = 'text-sm text-slate-700 leading-relaxed mt-3 whitespace-pre-line break-words';
+        text.textContent = suggestion.text || '';
+        card.append(header, text);
+        container.append(card);
+    });
 }
 
 function renderDashboard() {

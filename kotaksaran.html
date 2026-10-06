@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kotak Saran Digital | Tulip IX</title>
+    <link rel="icon" type="image/png" href="assets/img/favicon.png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="assets/js/config/tailwind-config.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap">
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans antialiased min-h-screen" data-collections="">
+    <header class="bg-gradient-to-r from-blue-700 via-indigo-700 to-indigo-800 text-white shadow-md">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 py-4 flex flex-wrap items-center justify-between gap-3">
+            <a href="index.html" class="flex items-center gap-3">
+                <span class="w-10 h-10 rounded-xl bg-white/10 border border-white/10 flex items-center justify-center">
+                    <i class="fa-solid fa-comment-dots text-xl text-amber-200"></i>
+                </span>
+                <span>
+                    <span class="block font-bold">Kotak Saran Digital</span>
+                    <span class="block text-xs text-blue-200">Warga Tulip IX</span>
+                </span>
+            </a>
+            <a href="index.html" class="text-xs font-semibold text-white/90 hover:text-white"><i class="fa-solid fa-arrow-left mr-1"></i> Kembali</a>
+        </div>
+    </header>
+
+    <main class="max-w-4xl mx-auto px-4 sm:px-6 py-8 space-y-6">
+        <section class="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-6 md:p-8">
+            <div class="max-w-2xl">
+                <p class="text-xs font-bold text-emerald-700 uppercase tracking-widest">Suara Warga</p>
+                <h1 class="text-2xl md:text-3xl font-extrabold text-slate-900 mt-2">Sampaikan saran secara anonim</h1>
+                <p class="text-sm text-slate-600 leading-relaxed mt-3">Sampaikan ide, masukan, atau hal yang perlu diperbaiki di lingkungan kita. Nama dan email tidak diminta. Saran hanya dapat dibaca pengurus melalui dashboard setelah login admin.</p>
+            </div>
+            <form id="formSaran" class="mt-6 space-y-3">
+                <label for="isiSaran" class="block text-xs font-semibold text-slate-600 uppercase">Saran atau masukan</label>
+                <textarea id="isiSaran" required minlength="3" maxlength="2000" rows="6" placeholder="Tuliskan saran Anda di sini..." class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm leading-relaxed focus:outline-none focus:ring-2 focus:ring-emerald-500"></textarea>
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <p id="formSaranStatus" aria-live="polite" class="text-xs text-slate-500">Jangan cantumkan nama atau informasi pribadi jika ingin tetap anonim.</p>
+                    <button id="btnKirimSaran" type="submit" class="inline-flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-60 text-white px-5 py-2.5 rounded-xl text-sm font-semibold shadow-sm transition">
+                        <i class="fa-solid fa-paper-plane"></i><span>Kirim Saran</span>
+                    </button>
+                </div>
+            </form>
+        </section>
+    </main>
+
+    <script src="assets/js/common.js"></script>
+    <script src="assets/js/pages/kotaksaran.js"></script>
+    <script type="module" src="assets/js/firebase.js"></script>
+</body>
+</html>

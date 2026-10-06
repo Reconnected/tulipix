@@ -8,6 +8,8 @@ tulip-ix/
 ├── transaksi.html          Catatan transaksi kas (CRUD)
 ├── laporankeuangan.html    Laporan per periode + cetak
 ├── programkerja.html       Informasi program kerja untuk warga (CRUD admin)
+├── kotaksaran.html         Pengiriman saran anonim + daftar privat untuk admin
+├── firestore.rules         Aturan akses Firestore, termasuk privasi kotak saran
 └── assets/
     ├── css/style.css               Scrollbar & aturan print
     ├── img/favicon.png             Ganti dengan favicon Anda
@@ -32,6 +34,8 @@ Domain hosting harus ada di Firebase Console > Authentication > Settings > Autho
 ## Catatan
 - Tiap halaman hanya membaca koleksi Firestore yang ia butuhkan (atribut `data-collections` di `<body>`).
 - Modul Program Kerja dapat dibaca warga dan dikelola admin; datanya disimpan pada koleksi Firestore `programkerja`.
+- Kotak Saran Digital menerima saran tanpa nama/email. Saran hanya ditampilkan di Dashboard ketika admin login; halaman pengiriman tidak membaca daftar saran.
+- Terapkan `firestore.rules` pada Firebase Console > Firestore Database > Rules agar warga hanya dapat mengirim saran, bukan membaca saran yang telah masuk. Hak admin mengikuti pola aplikasi saat ini: akun Firebase yang berhasil login.
 - Menambah menu: buat halaman baru, tambahkan link di sidebar semua halaman, dan file JS di `assets/js/pages/`.
 - Keamanan: status "admin" di sisi klien hanya untuk tampilan. Pastikan Firestore Security Rules membatasi
   tulis/hapus hanya untuk akun admin Anda, dan nonaktifkan pendaftaran akun baru bila tidak dipakai.

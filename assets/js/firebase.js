@@ -1,7 +1,7 @@
 // Firebase: inisialisasi, autentikasi admin, sinkronisasi Firestore realtime, dan CRUD (dbSave / confirmDelete)
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-import { getFirestore, collection, doc, setDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import { getFirestore, collection, doc, setDoc, deleteDoc, addDoc, serverTimestamp, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 import { firebaseConfig } from "./config/firebase-config.js";
 
@@ -14,22 +14,52 @@ let currentUser = null;
 let pendingDeleteInfo = null;
 
 // Data Store Global
-window.dataStore = { warga: [], kategori: [], transaksi: [], programkerja: [] };
+window.dataStore = { warga: [], kategori: [], transaksi: [], programkerja: [], kotaksaran: [] };
 window.isAdmin = false;
+let adminCollectionUnsubscribers = [];
 
 // Realtime Data Sync from Firestore
 function setupFirestoreSync() {
     updateDbStatusBadge(true);
 
     // Hanya subscribe koleksi yang dibutuhkan halaman ini (atribut data-collections pada <body>)
-    const wanted = (document.body.dataset.collections || 'warga,kategori,transaksi')
+    const configuredCollections = document.body.hasAttribute('data-collections')
+        ? document.body.dataset.collections
+        : 'warga,kategori,transaksi';
+    const wanted = (configuredCollections || '')
         .split(',').map(s => s.trim()).filter(Boolean);
 
     wanted.forEach((name) => {
         onSnapshot(collection(db, name), (snapshot) => {
             window.dataStore[name] = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
             if (typeof refreshAllUI === 'function') refreshAllUI();
+        }, (err) => {
+            window.showToast(`Gagal memuat ${name}: ${err.message}`, true);
         });
+    });
+}
+
+function syncAdminCollections(user) {
+    adminCollectionUnsubscribers.forEach(unsubscribe => unsubscribe());
+    adminCollectionUnsubscribers = [];
+
+    const names = (document.body.dataset.adminCollections || '')
+        .split(',').map(name => name.trim()).filter(Boolean);
+
+    if (!user) {
+        names.forEach(name => { window.dataStore[name] = []; });
+        if (typeof refreshAllUI === 'function') refreshAllUI();
+        return;
+    }
+
+    names.forEach(name => {
+        const unsubscribe = onSnapshot(collection(db, name), (snapshot) => {
+            window.dataStore[name] = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+            if (typeof refreshAllUI === 'function') refreshAllUI();
+        }, (err) => {
+            window.showToast(`Gagal memuat ${name}: ${err.message}`, true);
+        });
+        adminCollectionUnsubscribers.push(unsubscribe);
     });
 }
 
@@ -54,6 +84,7 @@ window.showToast = (msg, isError = false) => {
 onAuthStateChanged(auth, (user) => {
     currentUser = user;
     window.isAdmin = !!user;
+    syncAdminCollections(user);
 
     const adminStatus = document.getElementById('adminUserStatus');
     const emailDisplay = document.getElementById('adminEmailDisplay');
@@ -156,6 +187,17 @@ window.dbSave = async function(colName, item) {
     } catch (err) {
         window.showToast("Gagal menyimpan: " + err.message, true);
     }
+};
+
+window.submitAnonymousSuggestion = async function(text) {
+    const suggestion = text.trim();
+    if (!suggestion || suggestion.length > 2000) {
+        throw new Error('Saran wajib diisi dan maksimal 2.000 karakter.');
+    }
+    await addDoc(collection(db, 'kotaksaran'), {
+        text: suggestion,
+        createdAt: serverTimestamp()
+    });
 };
 
 window.confirmDelete = function(colName, id, label) {
