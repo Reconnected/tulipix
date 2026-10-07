@@ -13,9 +13,11 @@ function populateCategoryFilter() {
     if (!select) return;
 
     select.innerHTML = '<option value="">Semua Kategori</option>';
-    (window.dataStore.kategori || []).forEach(k => {
-        select.innerHTML += `<option value="${k.id}">${k.nama} (${k.tipe})</option>`;
-    });
+    [...(window.dataStore.kategori || [])]
+        .sort((a, b) => (a.nama || '').localeCompare(b.nama || '', 'id', { sensitivity: 'base' }))
+        .forEach(k => {
+            select.innerHTML += `<option value="${k.id}">${k.nama} (${k.tipe})</option>`;
+        });
 }
 
 function getFilteredTransaksi() {
@@ -189,7 +191,9 @@ function populateModalCategoryDropdown() {
     if (!select) return;
     select.innerHTML = '';
 
-    const filtered = (window.dataStore.kategori || []).filter(k => k.tipe === tipe);
+    const filtered = (window.dataStore.kategori || [])
+        .filter(k => k.tipe === tipe)
+        .sort((a, b) => (a.nama || '').localeCompare(b.nama || '', 'id', { sensitivity: 'base' }));
     filtered.forEach(k => { select.innerHTML += `<option value="${k.id}">${k.nama}</option>`; });
 }
 

@@ -13,7 +13,8 @@ function renderKategoriLists() {
     masContainer.innerHTML = '';
     kelContainer.innerHTML = '';
 
-    const list = window.dataStore.kategori || [];
+    const list = [...(window.dataStore.kategori || [])]
+        .sort((a, b) => (a.nama || '').localeCompare(b.nama || '', 'id', { sensitivity: 'base' }));
     const isAdmin = window.isAdmin;
 
     list.forEach(k => {
