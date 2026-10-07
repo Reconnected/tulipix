@@ -8,12 +8,16 @@ function getFilteredWarga() {
     const search = (document.getElementById('searchWarga')?.value || '').toLowerCase();
     const filterIuran = document.getElementById('filterStatusIuran')?.value || '';
     const filterHunian = document.getElementById('filterStatusHunian')?.value || '';
+    const filterMenempati = document.getElementById('filterMenempatiRumah')?.value || '';
 
     let list = [...(window.dataStore.warga || [])];
 
     if (search) list = list.filter(w => (w.nama || '').toLowerCase().includes(search) || (w.blok || '').toLowerCase().includes(search));
     if (filterIuran) list = list.filter(w => w.statusIuran === filterIuran);
     if (filterHunian) list = list.filter(w => w.statusHunian === filterHunian);
+    if (filterMenempati === 'true') list = list.filter(w => w.menempatiRumah === true);
+    if (filterMenempati === 'false') list = list.filter(w => w.menempatiRumah === false);
+    if (filterMenempati === 'unset') list = list.filter(w => w.menempatiRumah == null);
 
     return list.sort((a, b) => {
         return (a.nomorRumah || a.blok || '').localeCompare(
@@ -33,7 +37,7 @@ function renderWargaTable() {
     tbody.innerHTML = '';
 
     if (list.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-slate-400 italic">Data warga tidak ditemukan.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="7" class="p-4 text-center text-slate-400 italic">Data warga tidak ditemukan.</td></tr>`;
         return;
     }
     const isAdmin = window.isAdmin;
@@ -45,6 +49,16 @@ function renderWargaTable() {
             : w.statusHunian === 'Kontrak'
                 ? 'bg-orange-100 text-orange-800'
                 : 'bg-slate-100 text-slate-700';
+        const menempatiRumah = w.menempatiRumah === true
+            ? 'Ya'
+            : w.menempatiRumah === false
+                ? 'Tidak'
+                : 'Belum diatur';
+        const menempatiClass = w.menempatiRumah === true
+            ? 'bg-emerald-100 text-emerald-800'
+            : w.menempatiRumah === false
+                ? 'bg-slate-100 text-slate-700'
+                : 'bg-amber-100 text-amber-800';
         tbody.innerHTML += `
             <tr class="hover:bg-slate-50 transition">
                 <td class="p-4 font-semibold text-slate-800">${w.blok}</td>
@@ -52,6 +66,11 @@ function renderWargaTable() {
                 <td class="p-4">
                     <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${statusHunianClass}">
                         ${w.statusHunian}
+                    </span>
+                </td>
+                <td class="p-4">
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${menempatiClass}">
+                        ${menempatiRumah}
                     </span>
                 </td>
                 <td class="p-4 text-slate-600">${w.hp || '-'}</td>
@@ -78,6 +97,7 @@ function getWargaExportRows() {
         'No. Rumah/Blok': w.blok || '',
         'Kepala Keluarga': w.nama || '',
         'Status Hunian': w.statusHunian || '',
+        'Menempati Rumah': w.menempatiRumah === true ? 'Ya' : w.menempatiRumah === false ? 'Tidak' : 'Belum diatur',
         'No. Telephone / HP': w.hp || '',
         'Status Iuran Bulanan': w.statusIuran || ''
     }));
@@ -86,7 +106,8 @@ function getWargaExportRows() {
 function getWargaExportFilename(extension) {
     const filterIuran = document.getElementById('filterStatusIuran')?.value || 'semua-status';
     const filterHunian = document.getElementById('filterStatusHunian')?.value || 'semua-hunian';
-    return `master-warga-${filterIuran.toLowerCase()}-${filterHunian.toLowerCase().replaceAll(' ', '-')}.${extension}`;
+    const filterMenempati = document.getElementById('filterMenempatiRumah')?.value || 'semua-status-menempati';
+    return `master-warga-${filterIuran.toLowerCase()}-${filterHunian.toLowerCase().replaceAll(' ', '-')}-${filterMenempati.toLowerCase()}.${extension}`;
 }
 
 function downloadWargaExcel() {
@@ -96,7 +117,7 @@ function downloadWargaExcel() {
     }
 
     const worksheet = XLSX.utils.json_to_sheet(getWargaExportRows());
-    worksheet['!cols'] = [{ wch: 18 }, { wch: 28 }, { wch: 18 }, { wch: 20 }, { wch: 24 }];
+    worksheet['!cols'] = [{ wch: 18 }, { wch: 28 }, { wch: 18 }, { wch: 18 }, { wch: 20 }, { wch: 24 }];
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, 'Master Warga');
     XLSX.writeFile(workbook, getWargaExportFilename('xlsx'));
@@ -117,8 +138,8 @@ function downloadWargaPdf() {
     pdf.text('Daftar warga sesuai filter yang dipilih', 14, 22);
     pdf.autoTable({
         startY: 28,
-        head: [['No. Rumah/Blok', 'Kepala Keluarga', 'Status Hunian', 'No. Telephone / HP', 'Status Iuran Bulanan']],
-        body: rows.map(row => [row['No. Rumah/Blok'], row['Kepala Keluarga'], row['Status Hunian'], row['No. Telephone / HP'], row['Status Iuran Bulanan']]),
+        head: [['No. Rumah/Blok', 'Kepala Keluarga', 'Status Hunian', 'Menempati Rumah', 'No. Telephone / HP', 'Status Iuran Bulanan']],
+        body: rows.map(row => [row['No. Rumah/Blok'], row['Kepala Keluarga'], row['Status Hunian'], row['Menempati Rumah'], row['No. Telephone / HP'], row['Status Iuran Bulanan']]),
         styles: { fontSize: 9, cellPadding: 3 },
         headStyles: { fillColor: [15, 118, 110] },
         didDrawPage: data => {
@@ -144,6 +165,9 @@ function openModalWarga(id = null) {
             if (document.getElementById('wargaNama')) document.getElementById('wargaNama').value = w.nama;
             if (document.getElementById('wargaBlok')) document.getElementById('wargaBlok').value = w.blok;
             if (document.getElementById('wargaStatusHunian')) document.getElementById('wargaStatusHunian').value = w.statusHunian;
+            if (document.getElementById('wargaMenempatiRumah')) {
+                document.getElementById('wargaMenempatiRumah').value = w.menempatiRumah == null ? '' : String(w.menempatiRumah);
+            }
             if (document.getElementById('wargaHp')) document.getElementById('wargaHp').value = w.hp || '';
             if (document.getElementById('wargaStatusIuran')) document.getElementById('wargaStatusIuran').value = w.statusIuran;
         }
@@ -160,11 +184,18 @@ function closeModalWarga() {
 async function saveWarga(e) {
     e.preventDefault();
     const id = document.getElementById('wargaId')?.value;
+    const menempatiRumah = document.getElementById('wargaMenempatiRumah')?.value;
+    if (menempatiRumah !== 'true' && menempatiRumah !== 'false') {
+        window.showToast('Pilih status apakah warga menempati rumah.', true);
+        return;
+    }
+
     const item = {
         id: id || undefined,
         nama: document.getElementById('wargaNama')?.value || '',
         blok: document.getElementById('wargaBlok')?.value || '',
         statusHunian: document.getElementById('wargaStatusHunian')?.value || 'Tetap',
+        menempatiRumah: menempatiRumah === 'true',
         hp: document.getElementById('wargaHp')?.value || '',
         statusIuran: document.getElementById('wargaStatusIuran')?.value || 'Lunas',
     };

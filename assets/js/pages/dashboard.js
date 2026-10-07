@@ -4,7 +4,111 @@ let myFinanceChart = null;
 
 function refreshAllUI() {
     renderDashboard();
+    renderKartuIuranWarga();
     renderDashboardSuggestions();
+}
+
+function renderKartuIuranWarga() {
+    const select = document.getElementById('kartuIuranWarga');
+    const yearSelect = document.getElementById('kartuIuranTahun');
+    const container = document.getElementById('kartuIuranBulan');
+    if (!select || !yearSelect || !container) return;
+
+    const selectedId = select.value;
+    const selectedYear = yearSelect.value;
+    select.replaceChildren(new Option('Pilih nama / nomor rumah', ''));
+    yearSelect.replaceChildren(new Option('Pilih tahun', ''));
+
+    const warga = [...(window.dataStore.warga || [])].sort((a, b) =>
+        (a.blok || '').localeCompare(b.blok || '', 'id', { numeric: true, sensitivity: 'base' }) ||
+        (a.nama || '').localeCompare(b.nama || '', 'id', { sensitivity: 'base' })
+    );
+    warga.forEach(w => select.add(new Option(`${w.nama || 'Tanpa nama'} (${w.blok || 'Tanpa nomor rumah'})`, w.id)));
+
+    if (warga.some(w => w.id === selectedId)) select.value = selectedId;
+
+    const monthNames = {
+        januari: 0, februari: 1, maret: 2, april: 3, mei: 4, juni: 5,
+        juli: 6, agustus: 7, september: 8, oktober: 9, november: 10, desember: 11
+    };
+    const monthPattern = /iuran\s+kas\s+lorong\s+(januari|februari|maret|april|mei|juni|juli|agustus|september|oktober|november|desember)\s+(\d{4})\s*$/i;
+    const months = new Map();
+
+    (window.dataStore.kategori || []).forEach(category => {
+        const match = (category.nama || '').match(monthPattern);
+        if (!match) return;
+
+        const month = match[1].toLowerCase();
+        const year = Number(match[2]);
+        const key = `${year}-${String(monthNames[month] + 1).padStart(2, '0')}`;
+        if (!months.has(key)) months.set(key, { key, month, year, categoryIds: [] });
+        months.get(key).categoryIds.push(category.id);
+    });
+
+    const years = [...new Set([...months.values()].map(month => month.year))].sort((a, b) => b - a);
+    years.forEach(year => yearSelect.add(new Option(String(year), String(year))));
+    if (years.includes(Number(selectedYear))) yearSelect.value = selectedYear;
+
+    container.replaceChildren();
+
+    if (months.size === 0) {
+        const message = document.createElement('p');
+        message.className = 'text-sm text-slate-500 italic';
+        message.textContent = 'Belum ada kategori iuran bulanan dengan format “Iuran Kas Lorong [Bulan] [Tahun]”.';
+        container.append(message);
+        return;
+    }
+
+    if (!select.value || !yearSelect.value) {
+        const message = document.createElement('p');
+        message.className = 'text-sm text-slate-400 italic';
+        message.textContent = !select.value
+            ? 'Pilih warga untuk melihat status pembayaran iuran.'
+            : 'Pilih tahun untuk melihat status pembayaran iuran.';
+        container.append(message);
+        return;
+    }
+
+    const selectedWargaId = select.value;
+    const monthEntries = [...months.values()]
+        .filter(month => month.year === Number(yearSelect.value))
+        .sort((a, b) => b.key.localeCompare(a.key));
+    monthEntries.forEach(month => {
+        const payments = (window.dataStore.transaksi || [])
+            .filter(transaction =>
+                transaction.wargaId === selectedWargaId &&
+                transaction.tipe === 'Pemasukan' &&
+                month.categoryIds.includes(transaction.kategoriId)
+            )
+            .sort((a, b) => (b.tanggal || '').localeCompare(a.tanggal || ''));
+        const paid = payments.length > 0;
+        const card = document.createElement('article');
+        card.className = `p-4 rounded-xl border ${paid ? 'bg-emerald-50 border-emerald-200' : 'bg-slate-50 border-slate-200'}`;
+
+        const title = document.createElement('h4');
+        title.className = 'font-semibold text-slate-800';
+        title.textContent = `${month.month.charAt(0).toUpperCase()}${month.month.slice(1)} ${month.year}`;
+
+        const status = document.createElement('p');
+        status.className = `mt-2 inline-flex items-center gap-1.5 text-xs font-semibold ${paid ? 'text-emerald-700' : 'text-amber-700'}`;
+        status.innerHTML = paid
+            ? '<i class="fa-solid fa-circle-check"></i> Lunas'
+            : '<i class="fa-solid fa-clock"></i> Belum tercatat';
+        card.append(title, status);
+
+        if (paid) {
+            const payment = payments[0];
+            const detail = document.createElement('p');
+            detail.className = 'mt-1 text-xs text-slate-500';
+            detail.textContent = [
+                payment.tanggal ? new Date(`${payment.tanggal}T00:00:00`).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }) : '',
+                payment.jumlah ? formatRupiah(payment.jumlah) : ''
+            ].filter(Boolean).join(' · ');
+            if (detail.textContent) card.append(detail);
+        }
+
+        container.append(card);
+    });
 }
 
 function renderDashboardSuggestions() {
@@ -92,7 +196,7 @@ function renderDashboard() {
     const dashKeluar = document.getElementById('dashKeluarBulan');
     if (dashKeluar) dashKeluar.innerText = formatRupiah(keluarBulanIni);
     const dashWarga = document.getElementById('dashTotalWarga');
-    if (dashWarga) dashWarga.innerText = warga.length + " KK";
+    if (dashWarga) dashWarga.innerText = `${warga.filter(w => w.menempatiRumah === true).length} penghuni`;
     const dashTunggak = document.getElementById('dashTunggakanBadge');
     if (dashTunggak) dashTunggak.innerHTML = `<i class="fa-solid fa-circle-exclamation"></i> ${tunggakanCount} Menunggak Iuran`;
 

@@ -130,6 +130,12 @@
                             <option value="Kontrak">Kontrak</option>
                             <option value="Belum Menempati">Belum Menempati</option>
                         </select>
+                        <select id="filterMenempatiRumah" onchange="renderWargaTable()" class="px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                            <option value="">Semua Status Menempati</option>
+                            <option value="true">Menempati</option>
+                            <option value="false">Tidak Menempati</option>
+                            <option value="unset">Belum Diatur</option>
+                        </select>
                     </div>
                     <div class="flex flex-wrap items-center justify-end gap-2">
                         <button onclick="downloadWargaExcel()" title="Download Excel" class="bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 px-3 py-2 rounded-xl text-sm font-medium inline-flex items-center space-x-2 transition">
@@ -155,6 +161,7 @@
                                     <th class="p-4">No. Rumah/Blok</th>
                                     <th class="p-4">Kepala Keluarga</th>
                                     <th class="p-4">Status Hunian</th>
+                                    <th class="p-4">Menempati Rumah</th>
                                     <th class="p-4">No. Telephone / HP</th>
                                     <th class="p-4">Status Iuran Bulanan</th>
                                     <th class="p-4 text-center th-aksi-col hidden">Aksi (Admin)</th>
@@ -194,6 +201,14 @@
                         <option value="Tetap">Tetap</option>
                         <option value="Kontrak">Kontrak</option>
                         <option value="Belum Menempati">Belum Menempati</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Menempati Rumah Saat Ini?</label>
+                    <select id="wargaMenempatiRumah" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                        <option value="">Pilih status menempati</option>
+                        <option value="true">Ya, menempati</option>
+                        <option value="false">Tidak menempati</option>
                     </select>
                 </div>
                 <div>
