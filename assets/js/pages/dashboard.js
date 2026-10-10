@@ -27,58 +27,43 @@ function renderKartuIuranWarga() {
 
     if (warga.some(w => w.id === selectedId)) select.value = selectedId;
 
-    const monthNames = {
-        januari: 0, februari: 1, maret: 2, april: 3, mei: 4, juni: 5,
-        juli: 6, agustus: 7, september: 8, oktober: 9, november: 10, desember: 11
-    };
-    const monthPattern = /iuran\s+kas\s+lorong\s+(januari|februari|maret|april|mei|juni|juli|agustus|september|oktober|november|desember)\s+(\d{4})\s*$/i;
-    const months = new Map();
-
-    (window.dataStore.kategori || []).forEach(category => {
-        const match = (category.nama || '').match(monthPattern);
-        if (!match) return;
-
-        const month = match[1].toLowerCase();
-        const year = Number(match[2]);
-        const key = `${year}-${String(monthNames[month] + 1).padStart(2, '0')}`;
-        if (!months.has(key)) months.set(key, { key, month, year, categoryIds: [] });
-        months.get(key).categoryIds.push(category.id);
-    });
-
-    const years = [...new Set([...months.values()].map(month => month.year))].sort((a, b) => b - a);
+    const currentYear = new Date().getFullYear();
+    const years = [currentYear - 1, currentYear, currentYear + 1];
     years.forEach(year => yearSelect.add(new Option(String(year), String(year))));
-    if (years.includes(Number(selectedYear))) yearSelect.value = selectedYear;
+    yearSelect.value = years.includes(Number(selectedYear)) ? selectedYear : String(currentYear);
 
     container.replaceChildren();
 
-    if (months.size === 0) {
-        const message = document.createElement('p');
-        message.className = 'text-sm text-slate-500 italic';
-        message.textContent = 'Belum ada kategori iuran bulanan dengan format “Iuran Kas Lorong [Bulan] [Tahun]”.';
-        container.append(message);
-        return;
-    }
+    const iuranCategoryIds = (window.dataStore.kategori || [])
+        .filter(category => (category.nama || '').trim().toLocaleLowerCase('id') === 'iuran kas lorong')
+        .map(category => category.id);
 
-    if (!select.value || !yearSelect.value) {
+    if (!select.value) {
         const message = document.createElement('p');
         message.className = 'text-sm text-slate-400 italic';
-        message.textContent = !select.value
-            ? 'Pilih warga untuk melihat status pembayaran iuran.'
-            : 'Pilih tahun untuk melihat status pembayaran iuran.';
+        message.textContent = 'Pilih warga untuk melihat status pembayaran iuran.';
         container.append(message);
         return;
     }
 
     const selectedWargaId = select.value;
-    const monthEntries = [...months.values()]
-        .filter(month => month.year === Number(yearSelect.value))
-        .sort((a, b) => b.key.localeCompare(a.key));
+    const monthNames = [
+        'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+        'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+    ];
+    const selectedYearNumber = Number(yearSelect.value);
+    const monthEntries = monthNames.map((month, index) => ({
+        key: `${selectedYearNumber}-${String(index + 1).padStart(2, '0')}`,
+        month,
+        year: selectedYearNumber
+    }));
     monthEntries.forEach(month => {
         const payments = (window.dataStore.transaksi || [])
             .filter(transaction =>
                 transaction.wargaId === selectedWargaId &&
                 transaction.tipe === 'Pemasukan' &&
-                month.categoryIds.includes(transaction.kategoriId)
+                iuranCategoryIds.includes(transaction.kategoriId) &&
+                transaction.periode === month.key
             )
             .sort((a, b) => (b.tanggal || '').localeCompare(a.tanggal || ''));
         const paid = payments.length > 0;

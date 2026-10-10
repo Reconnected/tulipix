@@ -3,6 +3,14 @@
 const TRANSAKSI_PAGE_SIZE = 25;
 let transaksiCurrentPage = 1;
 
+function formatTransaksiPeriode(periode) {
+    if (!periode) return '-';
+    const date = new Date(`${periode}-01T00:00:00`);
+    return Number.isNaN(date.getTime())
+        ? periode
+        : date.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' });
+}
+
 function refreshAllUI() {
     renderTransaksiTable();
     populateCategoryFilter();
@@ -29,7 +37,7 @@ function getFilteredTransaksi() {
 
     if (tipe) list = list.filter(t => t.tipe === tipe);
     if (kat) list = list.filter(t => t.kategoriId === kat);
-    if (bulan) list = list.filter(t => t.tanggal && t.tanggal.startsWith(bulan));
+    if (bulan) list = list.filter(t => t.periode === bulan);
 
     return list.sort((a, b) => new Date(b.tanggal) - new Date(a.tanggal));
 }
@@ -80,7 +88,7 @@ function renderTransaksiTable() {
     tbody.innerHTML = '';
 
     if (list.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-slate-400 italic">Tidak ada catatan transaksi.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="7" class="p-4 text-center text-slate-400 italic">Tidak ada catatan transaksi.</td></tr>`;
         return;
     }
 
@@ -95,6 +103,7 @@ function renderTransaksiTable() {
         tbody.innerHTML += `
             <tr class="hover:bg-slate-50 transition">
                 <td class="p-4 text-slate-600 font-medium">${t.tanggal}</td>
+                <td class="p-4 text-slate-600">${formatTransaksiPeriode(t.periode)}</td>
                 <td class="p-4">
                     <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold ${isMasuk ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}">
                         ${t.tipe}
@@ -128,6 +137,7 @@ function getTransaksiExportRows() {
 
         return {
             Tanggal: t.tanggal || '',
+            Periode: formatTransaksiPeriode(t.periode),
             Jenis: t.tipe || '',
             Kategori: katObj ? katObj.nama : 'Umum',
             'Keterangan / Warga': [t.keterangan || '-', wargaObj ? `${wargaObj.nama} (${wargaObj.blok})` : ''].filter(Boolean).join(' - '),
@@ -138,7 +148,7 @@ function getTransaksiExportRows() {
 
 function getTransaksiExportFilename(extension) {
     const bulan = document.getElementById('filterTxBulan')?.value || 'semua-waktu';
-    return `transaksi-kas-${bulan}.${extension}`;
+    return `transaksi-kas-periode-${bulan}.${extension}`;
 }
 
 function downloadTransaksiExcel() {
@@ -148,7 +158,7 @@ function downloadTransaksiExcel() {
     }
 
     const worksheet = XLSX.utils.json_to_sheet(getTransaksiExportRows());
-    worksheet['!cols'] = [{ wch: 14 }, { wch: 16 }, { wch: 24 }, { wch: 42 }, { wch: 18 }];
+    worksheet['!cols'] = [{ wch: 14 }, { wch: 20 }, { wch: 16 }, { wch: 24 }, { wch: 42 }, { wch: 18 }];
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, 'Transaksi');
     XLSX.writeFile(workbook, getTransaksiExportFilename('xlsx'));
@@ -164,7 +174,7 @@ function downloadTransaksiPdf() {
     const rows = getTransaksiExportRows();
     const pdf = new pdfConstructor({ orientation: 'portrait', unit: 'mm', format: 'a4' });
     const bulan = document.getElementById('filterTxBulan')?.value || '';
-    const periodTitle = bulan ? `Periode ${bulan}` : 'Semua Periode';
+    const periodTitle = bulan ? `Periode tujuan ${formatTransaksiPeriode(bulan)}` : 'Semua periode tujuan';
 
     pdf.setFontSize(16);
     pdf.text('Catatan Transaksi Kas Warga Tulip IX', 14, 15);
@@ -172,11 +182,11 @@ function downloadTransaksiPdf() {
     pdf.text(periodTitle, 14, 22);
     pdf.autoTable({
         startY: 28,
-        head: [['Tanggal', 'Jenis', 'Kategori', 'Keterangan / Warga', 'Jumlah (Rp)']],
-        body: rows.map(row => [row.Tanggal, row.Jenis, row.Kategori, row['Keterangan / Warga'], formatRupiah(row['Jumlah (Rp)'])]),
+        head: [['Tanggal', 'Periode', 'Jenis', 'Kategori', 'Keterangan / Warga', 'Jumlah (Rp)']],
+        body: rows.map(row => [row.Tanggal, row.Periode, row.Jenis, row.Kategori, row['Keterangan / Warga'], formatRupiah(row['Jumlah (Rp)'])]),
         styles: { fontSize: 9, cellPadding: 3 },
         headStyles: { fillColor: [15, 118, 110] },
-        columnStyles: { 4: { halign: 'right' } },
+        columnStyles: { 5: { halign: 'right' } },
         didDrawPage: data => {
             pdf.setFontSize(8);
             pdf.text(`Halaman ${data.pageNumber}`, 196, 285, { align: 'right' });
@@ -224,6 +234,7 @@ function openModalTransaksi(id = null) {
         if (t) {
             if (document.getElementById('transaksiId')) document.getElementById('transaksiId').value = t.id;
             if (document.getElementById('txTanggal')) document.getElementById('txTanggal').value = t.tanggal;
+            if (document.getElementById('txPeriode')) document.getElementById('txPeriode').value = t.periode || '';
             if (document.getElementById('txTipe')) document.getElementById('txTipe').value = t.tipe;
             populateModalCategoryDropdown();
             if (document.getElementById('txKategori')) document.getElementById('txKategori').value = t.kategoriId;
@@ -249,6 +260,7 @@ async function saveTransaksi(e) {
     const item = {
         id: id || undefined,
         tanggal: document.getElementById('txTanggal')?.value || '',
+        periode: document.getElementById('txPeriode')?.value || '',
         tipe: document.getElementById('txTipe')?.value || 'Pemasukan',
         kategoriId: document.getElementById('txKategori')?.value || '',
         jumlah: Number(document.getElementById('txJumlah')?.value) || 0,

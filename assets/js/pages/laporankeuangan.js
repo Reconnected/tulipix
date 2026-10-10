@@ -4,6 +4,14 @@ const REPORT_PAGE_SIZE = 25;
 let reportCurrentPage = 1;
 let isPrintingReport = false;
 
+function formatReportTransactionPeriod(periode) {
+    if (!periode) return '-';
+    const date = new Date(`${periode}-01T00:00:00`);
+    return Number.isNaN(date.getTime())
+        ? periode
+        : date.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' });
+}
+
 function refreshAllUI() {
     generateReport();
 }
@@ -55,9 +63,9 @@ function generateReport() {
         list = list.filter(t => t.tanggal && t.tanggal.startsWith(bulan));
         const d = new Date(bulan + "-01");
         const monthStr = d.toLocaleString('id-ID', { month: 'long', year: 'numeric' });
-        if (periodTitle) periodTitle.innerText = `Periode: ${monthStr}`;
+        if (periodTitle) periodTitle.innerText = `Bulan Pembayaran: ${monthStr}`;
     } else {
-        if (periodTitle) periodTitle.innerText = `Periode: Semua Waktu (Keseluruhan)`;
+        if (periodTitle) periodTitle.innerText = `Bulan Pembayaran: Semua Waktu (Keseluruhan)`;
     }
 
     list.sort((a, b) => new Date(a.tanggal) - new Date(b.tanggal));
@@ -72,7 +80,7 @@ function generateReport() {
     });
 
     if (list.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="7" class="py-4 text-center text-slate-400 italic">Tidak ada data transaksi pada periode ini.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="8" class="py-4 text-center text-slate-400 italic">Tidak ada data transaksi pada periode ini.</td></tr>`;
     } else {
         const totalPages = Math.max(1, Math.ceil(list.length / REPORT_PAGE_SIZE));
         reportCurrentPage = Math.min(Math.max(reportCurrentPage, 1), totalPages);
@@ -94,6 +102,7 @@ function generateReport() {
                 <tr class="border-b border-slate-100">
                     <td class="py-2.5 px-3 text-slate-500">${startIndex + idx + 1}</td>
                     <td class="py-2.5 px-3 font-medium text-slate-800">${t.tanggal}</td>
+                    <td class="py-2.5 px-3">${formatReportTransactionPeriod(t.periode)}</td>
                     <td class="py-2.5 px-3">${t.tipe}</td>
                     <td class="py-2.5 px-3">${katObj ? katObj.nama : 'Umum'}</td>
                     <td class="py-2.5 px-3 text-slate-600">${ketDetail}</td>

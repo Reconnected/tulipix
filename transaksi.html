@@ -123,7 +123,7 @@
                         <select id="filterTxKategori" onchange="filterTransaksiChanged()" class="px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
                             <option value="">Semua Kategori</option>
                         </select>
-                        <input type="month" id="filterTxBulan" onchange="filterTransaksiChanged()" class="px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                        <input type="month" id="filterTxBulan" aria-label="Filter berdasarkan periode tujuan" onchange="filterTransaksiChanged()" class="px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
                     </div>
                     
                     <div class="flex flex-wrap items-center justify-end gap-2">
@@ -150,6 +150,7 @@
                             <thead>
                                 <tr class="bg-slate-50 border-b border-slate-200 text-xs text-slate-500 uppercase font-semibold">
                                     <th class="p-4">Tanggal</th>
+                                    <th class="p-4">Periode</th>
                                     <th class="p-4">Jenis</th>
                                     <th class="p-4">Kategori</th>
                                     <th class="p-4">Keterangan / Warga</th>
@@ -189,6 +190,11 @@
                             <option value="Pengeluaran">Pengeluaran</option>
                         </select>
                     </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Periode Tujuan (Opsional)</label>
+                    <input type="month" id="txPeriode" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                    <p class="mt-1 text-xs text-slate-500">Bulan tujuan transaksi, misalnya September 2026.</p>
                 </div>
                 <div>
                     <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Kategori Transaksi</label>

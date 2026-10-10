@@ -110,7 +110,7 @@
             <section id="view-report" class="space-y-6">
                 <div class="no-print flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm">
                     <div class="flex items-center space-x-3">
-                        <label class="text-sm font-medium text-slate-700">Pilih Periode Bulan:</label>
+                        <label class="text-sm font-medium text-slate-700">Filter Bulan Pembayaran:</label>
                         <input type="month" id="reportBulan" onchange="reportPeriodChanged()" class="px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
                     </div>
                     <button onclick="window.print()" class="bg-slate-800 hover:bg-slate-900 text-white px-4 py-2 rounded-xl text-sm font-medium inline-flex items-center space-x-2 transition">
@@ -149,6 +149,7 @@
                                 <tr class="bg-slate-100 border-b border-slate-300 text-slate-700 font-semibold uppercase">
                                     <th class="py-2.5 px-3">#</th>
                                     <th class="py-2.5 px-3">Tanggal</th>
+                                    <th class="py-2.5 px-3">Periode</th>
                                     <th class="py-2.5 px-3">Jenis</th>
                                     <th class="py-2.5 px-3">Kategori</th>
                                     <th class="py-2.5 px-3">Keterangan</th>
