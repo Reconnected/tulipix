@@ -12,31 +12,80 @@ function formatTransaksiPeriode(periode) {
 }
 
 function refreshAllUI() {
-    renderTransaksiTable();
     populateCategoryFilter();
+    renderTransaksiTable();
 }
 
 function populateCategoryFilter() {
-    const select = document.getElementById('filterTxKategori');
-    if (!select) return;
+    const options = document.getElementById('filterTxKategoriOptions');
+    if (!options) return;
 
-    select.innerHTML = '<option value="">Semua Kategori</option>';
+    const selectedIds = new Set(getSelectedTransactionCategoryIds());
+    options.replaceChildren();
+    const allLabel = document.createElement('label');
+    allLabel.className = 'flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-slate-50 text-sm cursor-pointer';
+    const allCheckbox = document.createElement('input');
+    allCheckbox.type = 'checkbox';
+    allCheckbox.checked = selectedIds.size === 0;
+    allCheckbox.addEventListener('change', () => {
+        if (allCheckbox.checked) {
+            options.querySelectorAll('[data-category-filter]').forEach(checkbox => { checkbox.checked = false; });
+        }
+        updateTransactionCategoryFilter();
+    });
+    const allText = document.createElement('span');
+    allText.textContent = 'Semua kategori';
+    allLabel.append(allCheckbox, allText);
+    options.append(allLabel);
+
     [...(window.dataStore.kategori || [])]
         .sort((a, b) => (a.nama || '').localeCompare(b.nama || '', 'id', { sensitivity: 'base' }))
         .forEach(k => {
-            select.innerHTML += `<option value="${k.id}">${k.nama} (${k.tipe})</option>`;
+            const label = document.createElement('label');
+            label.className = 'flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-slate-50 text-sm cursor-pointer';
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.dataset.categoryFilter = 'true';
+            checkbox.value = k.id;
+            checkbox.checked = selectedIds.has(k.id);
+            checkbox.addEventListener('change', updateTransactionCategoryFilter);
+            const text = document.createElement('span');
+            text.textContent = `${k.nama || 'Tanpa nama'} (${k.tipe || 'Tanpa jenis'})`;
+            label.append(checkbox, text);
+            options.append(label);
         });
+    updateTransactionCategoryFilter();
+}
+
+function getSelectedTransactionCategoryIds() {
+    return [...(document.querySelectorAll('#filterTxKategoriOptions [data-category-filter]:checked'))]
+        .map(checkbox => checkbox.value);
+}
+
+function updateTransactionCategoryFilter() {
+    const options = document.getElementById('filterTxKategoriOptions');
+    const label = document.getElementById('filterTxKategoriLabel');
+    if (!options || !label) return;
+
+    const selected = getSelectedTransactionCategoryIds();
+    const allCheckbox = options.querySelector('label input[type="checkbox"]:not([data-category-filter])');
+    if (allCheckbox) {
+        allCheckbox.checked = selected.length === 0;
+        allCheckbox.indeterminate = selected.length > 0;
+    }
+    label.textContent = selected.length ? `${selected.length} kategori dipilih` : 'Semua Kategori';
+    filterTransaksiChanged();
 }
 
 function getFilteredTransaksi() {
     const tipe = document.getElementById('filterTxTipe')?.value || '';
-    const kat = document.getElementById('filterTxKategori')?.value || '';
+    const kategoriIds = getSelectedTransactionCategoryIds();
     const bulan = document.getElementById('filterTxBulan')?.value || '';
 
     let list = [...(window.dataStore.transaksi || [])];
 
     if (tipe) list = list.filter(t => t.tipe === tipe);
-    if (kat) list = list.filter(t => t.kategoriId === kat);
+    if (kategoriIds.length) list = list.filter(t => kategoriIds.includes(t.kategoriId));
     if (bulan) list = list.filter(t => t.periode === bulan);
 
     return list.sort((a, b) => new Date(b.tanggal) - new Date(a.tanggal));

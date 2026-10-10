@@ -120,9 +120,13 @@
                             <option value="Pemasukan">Pemasukan (Kas Masuk)</option>
                             <option value="Pengeluaran">Pengeluaran (Kas Keluar)</option>
                         </select>
-                        <select id="filterTxKategori" onchange="filterTransaksiChanged()" class="px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
-                            <option value="">Semua Kategori</option>
-                        </select>
+                        <details id="filterTxKategoriDropdown" class="relative">
+                            <summary class="list-none cursor-pointer px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                                <span id="filterTxKategoriLabel">Semua Kategori</span>
+                                <i class="fa-solid fa-chevron-down ml-2 text-xs text-slate-400"></i>
+                            </summary>
+                            <div id="filterTxKategoriOptions" class="absolute z-30 mt-1 w-64 max-h-64 overflow-y-auto bg-white border border-slate-200 rounded-xl shadow-lg p-2 space-y-1"></div>
+                        </details>
                         <input type="month" id="filterTxBulan" aria-label="Filter berdasarkan periode tujuan" onchange="filterTransaksiChanged()" class="px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
                     </div>
                     

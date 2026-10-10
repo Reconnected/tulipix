@@ -108,10 +108,26 @@
         <main class="flex-1 p-4 md:p-6 overflow-x-hidden">
 
             <section id="view-report" class="space-y-6">
-                <div class="no-print flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm">
-                    <div class="flex items-center space-x-3">
-                        <label class="text-sm font-medium text-slate-700">Filter Bulan Pembayaran:</label>
-                        <input type="month" id="reportBulan" onchange="reportPeriodChanged()" class="px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                <div class="no-print flex flex-col lg:flex-row lg:items-center justify-between gap-4 bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm">
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 flex-1">
+                        <label class="flex flex-col gap-1 text-xs font-medium text-slate-600">
+                            <span>Bulan Tanggal Input</span>
+                            <input type="month" id="reportBulan" onchange="reportPeriodChanged()" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                        </label>
+                        <label class="flex flex-col gap-1 text-xs font-medium text-slate-600">
+                            <span>Periode Tujuan</span>
+                            <input type="month" id="reportPeriode" onchange="reportPeriodChanged()" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                        </label>
+                        <div class="flex flex-col gap-1 text-xs font-medium text-slate-600">
+                            <span>Kategori</span>
+                            <details id="reportKategoriDropdown" class="relative">
+                                <summary class="list-none cursor-pointer px-3 py-2 text-sm text-slate-700 bg-slate-50 border border-slate-200 rounded-xl">
+                                    <span id="reportKategoriLabel">Semua Kategori</span>
+                                    <i class="fa-solid fa-chevron-down ml-2 text-xs text-slate-400"></i>
+                                </summary>
+                                <div id="reportKategoriOptions" class="absolute z-30 mt-1 w-64 max-h-64 overflow-y-auto bg-white border border-slate-200 rounded-xl shadow-lg p-2 space-y-1"></div>
+                            </details>
+                        </div>
                     </div>
                     <button onclick="window.print()" class="bg-slate-800 hover:bg-slate-900 text-white px-4 py-2 rounded-xl text-sm font-medium inline-flex items-center space-x-2 transition">
                         <i class="fa-solid fa-print"></i>
@@ -124,7 +140,7 @@
                     <div class="text-center border-b border-slate-200 pb-6">
                         <h2 class="text-2xl font-bold text-slate-900 uppercase">Laporan Keuangan Kas Warga</h2>
                         <p class="text-sm text-slate-600 font-medium mt-1">Lorong Tulip IX</p>
-                        <p id="reportPeriodTitle" class="text-xs text-slate-500 mt-1 italic">Periode: Semua Waktu</p>
+                        <p id="reportPeriodTitle" class="text-xs text-slate-500 mt-1 italic">Tanggal pada laporan adalah tanggal input transaksi; periode adalah bulan tujuan transaksi.</p>
                     </div>
                     <!-- Summary Cards inside Report -->
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -148,8 +164,8 @@
                             <thead>
                                 <tr class="bg-slate-100 border-b border-slate-300 text-slate-700 font-semibold uppercase">
                                     <th class="py-2.5 px-3">#</th>
-                                    <th class="py-2.5 px-3">Tanggal</th>
-                                    <th class="py-2.5 px-3">Periode</th>
+                                    <th class="py-2.5 px-3">Tanggal Input</th>
+                                    <th class="py-2.5 px-3">Periode Tujuan</th>
                                     <th class="py-2.5 px-3">Jenis</th>
                                     <th class="py-2.5 px-3">Kategori</th>
                                     <th class="py-2.5 px-3">Keterangan</th>

@@ -13,7 +13,69 @@ function formatReportTransactionPeriod(periode) {
 }
 
 function refreshAllUI() {
+    populateReportCategoryFilter();
     generateReport();
+}
+
+function populateReportCategoryFilter() {
+    const options = document.getElementById('reportKategoriOptions');
+    if (!options) return;
+
+    const selectedIds = new Set(getSelectedReportCategoryIds());
+    options.replaceChildren();
+    const allLabel = document.createElement('label');
+    allLabel.className = 'flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-slate-50 text-sm cursor-pointer';
+    const allCheckbox = document.createElement('input');
+    allCheckbox.type = 'checkbox';
+    allCheckbox.checked = selectedIds.size === 0;
+    allCheckbox.addEventListener('change', () => {
+        if (allCheckbox.checked) {
+            options.querySelectorAll('[data-category-filter]').forEach(checkbox => { checkbox.checked = false; });
+        }
+        updateReportCategoryFilter();
+    });
+    const allText = document.createElement('span');
+    allText.textContent = 'Semua kategori';
+    allLabel.append(allCheckbox, allText);
+    options.append(allLabel);
+
+    [...(window.dataStore.kategori || [])]
+        .sort((a, b) => (a.nama || '').localeCompare(b.nama || '', 'id', { sensitivity: 'base' }))
+        .forEach(category => {
+            const label = document.createElement('label');
+            label.className = 'flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-slate-50 text-sm cursor-pointer';
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.dataset.categoryFilter = 'true';
+            checkbox.value = category.id;
+            checkbox.checked = selectedIds.has(category.id);
+            checkbox.addEventListener('change', updateReportCategoryFilter);
+            const text = document.createElement('span');
+            text.textContent = category.nama || 'Tanpa nama';
+            label.append(checkbox, text);
+            options.append(label);
+        });
+    updateReportCategoryFilter();
+}
+
+function getSelectedReportCategoryIds() {
+    return [...(document.querySelectorAll('#reportKategoriOptions [data-category-filter]:checked'))]
+        .map(checkbox => checkbox.value);
+}
+
+function updateReportCategoryFilter() {
+    const options = document.getElementById('reportKategoriOptions');
+    const label = document.getElementById('reportKategoriLabel');
+    if (!options || !label) return;
+
+    const selected = getSelectedReportCategoryIds();
+    const allCheckbox = options.querySelector('label input[type="checkbox"]:not([data-category-filter])');
+    if (allCheckbox) {
+        allCheckbox.checked = selected.length === 0;
+        allCheckbox.indeterminate = selected.length > 0;
+    }
+    label.textContent = selected.length ? `${selected.length} kategori dipilih` : 'Semua Kategori';
+    reportPeriodChanged();
 }
 
 function reportPeriodChanged() {
@@ -52,6 +114,8 @@ function renderReportPagination(totalItems) {
 
 function generateReport() {
     const bulan = document.getElementById('reportBulan')?.value || '';
+    const periode = document.getElementById('reportPeriode')?.value || '';
+    const kategoriIds = getSelectedReportCategoryIds();
     const periodTitle = document.getElementById('reportPeriodTitle');
     const tbody = document.getElementById('reportTableBody');
 
@@ -61,12 +125,18 @@ function generateReport() {
 
     if (bulan) {
         list = list.filter(t => t.tanggal && t.tanggal.startsWith(bulan));
-        const d = new Date(bulan + "-01");
-        const monthStr = d.toLocaleString('id-ID', { month: 'long', year: 'numeric' });
-        if (periodTitle) periodTitle.innerText = `Bulan Pembayaran: ${monthStr}`;
-    } else {
-        if (periodTitle) periodTitle.innerText = `Bulan Pembayaran: Semua Waktu (Keseluruhan)`;
     }
+    if (periode) list = list.filter(t => t.periode === periode);
+    if (kategoriIds.length) list = list.filter(t => kategoriIds.includes(t.kategoriId));
+
+    const filterDescriptions = [
+        bulan ? `Tanggal input: ${formatReportTransactionPeriod(bulan)}` : 'Tanggal input: semua',
+        periode ? `Periode tujuan: ${formatReportTransactionPeriod(periode)}` : 'Periode tujuan: semua',
+        kategoriIds.length
+            ? `Kategori: ${window.dataStore.kategori.filter(category => kategoriIds.includes(category.id)).map(category => category.nama || 'Tanpa nama').join(', ')}`
+            : 'Kategori: semua'
+    ];
+    if (periodTitle) periodTitle.innerText = filterDescriptions.join(' · ');
 
     list.sort((a, b) => new Date(a.tanggal) - new Date(b.tanggal));
 
