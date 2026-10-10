@@ -206,3 +206,15 @@ window.addEventListener('afterprint', () => {
     isPrintingReport = false;
     generateReport();
 });
+
+document.addEventListener('click', event => {
+    const dropdown = document.getElementById('reportKategoriDropdown');
+    if (dropdown?.open && !dropdown.contains(event.target)) dropdown.open = false;
+});
+
+document.addEventListener('keydown', event => {
+    if (event.key === 'Escape') {
+        const dropdown = document.getElementById('reportKategoriDropdown');
+        if (dropdown) dropdown.open = false;
+    }
+});

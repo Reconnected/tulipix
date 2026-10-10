@@ -332,3 +332,15 @@ async function saveTransaksi(e) {
 function editTransaksi(id) { openModalTransaksi(id); }
 
 function deleteTransaksi(id, desc) { window.confirmDelete('transaksi', id, desc); }
+
+document.addEventListener('click', event => {
+    const dropdown = document.getElementById('filterTxKategoriDropdown');
+    if (dropdown?.open && !dropdown.contains(event.target)) dropdown.open = false;
+});
+
+document.addEventListener('keydown', event => {
+    if (event.key === 'Escape') {
+        const dropdown = document.getElementById('filterTxKategoriDropdown');
+        if (dropdown) dropdown.open = false;
+    }
+});
