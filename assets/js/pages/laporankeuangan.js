@@ -121,7 +121,18 @@ function generateReport() {
 
     if (!tbody) return;
 
-    let list = [...(window.dataStore.transaksi || [])];
+    const allTransactions = [...(window.dataStore.transaksi || [])];
+    const saldoByTransaction = new Map();
+    let runningSaldo = 0;
+    allTransactions
+        .sort((a, b) => new Date(a.tanggal) - new Date(b.tanggal))
+        .forEach(t => {
+            const amount = Number(t.jumlah) || 0;
+            runningSaldo += t.tipe === 'Pemasukan' ? amount : -amount;
+            saldoByTransaction.set(t, runningSaldo);
+        });
+
+    let list = allTransactions;
 
     if (bulan) {
         list = list.filter(t => t.tanggal && t.tanggal.startsWith(bulan));
@@ -150,7 +161,7 @@ function generateReport() {
     });
 
     if (list.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="8" class="py-4 text-center text-slate-400 italic">Tidak ada data transaksi pada periode ini.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="9" class="py-4 text-center text-slate-400 italic">Tidak ada data transaksi pada periode ini.</td></tr>`;
     } else {
         const totalPages = Math.max(1, Math.ceil(list.length / REPORT_PAGE_SIZE));
         reportCurrentPage = Math.min(Math.max(reportCurrentPage, 1), totalPages);
@@ -178,6 +189,7 @@ function generateReport() {
                     <td class="py-2.5 px-3 text-slate-600">${ketDetail}</td>
                     <td class="py-2.5 px-3 text-right font-medium text-emerald-600">${isMasuk ? formatRupiah(amount) : '-'}</td>
                     <td class="py-2.5 px-3 text-right font-medium text-rose-600">${!isMasuk ? formatRupiah(amount) : '-'}</td>
+                    <td class="py-2.5 px-3 text-right font-medium text-slate-800">${formatRupiah(saldoByTransaction.get(t) || 0)}</td>
                 </tr>
             `;
         });

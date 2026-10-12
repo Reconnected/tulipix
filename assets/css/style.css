@@ -56,23 +56,23 @@
         padding: 3px 4px !important;
     }
     #view-report th:nth-child(1),
-    #view-report td:nth-child(1) { width: 4%; }
+    #view-report td:nth-child(1) { width: 3%; }
     #view-report th:nth-child(2),
-    #view-report td:nth-child(2) { width: 10%; }
+    #view-report td:nth-child(2) { width: 9%; }
     #view-report th:nth-child(3),
-    #view-report td:nth-child(3) { width: 12%; }
+    #view-report td:nth-child(3) { width: 10%; }
     #view-report th:nth-child(4),
-    #view-report td:nth-child(4) { width: 9%; }
+    #view-report td:nth-child(4) { width: 8%; }
     #view-report th:nth-child(5),
-    #view-report td:nth-child(5) { width: 11%; }
+    #view-report td:nth-child(5) { width: 10%; }
     #view-report th:nth-child(6),
     #view-report td:nth-child(6) {
-        width: 24%;
+        width: 23%;
         overflow-wrap: anywhere;
     }
-    #view-report th:nth-last-child(-n+2),
-    #view-report td:nth-last-child(-n+2) {
-        width: 15%;
+    #view-report th:nth-last-child(-n+3),
+    #view-report td:nth-last-child(-n+3) {
+        width: 12%;
         white-space: nowrap;
     }
     #view-report #reportSummaryCards {
