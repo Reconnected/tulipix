@@ -221,7 +221,9 @@ function downloadTransaksiPdf() {
     }
 
     const rows = getTransaksiExportRows();
-    const pdf = new pdfConstructor({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+    const pdf = new pdfConstructor({ orientation: 'landscape', unit: 'mm', format: 'a4' });
+    const pageWidth = pdf.internal.pageSize.getWidth();
+    const pageHeight = pdf.internal.pageSize.getHeight();
     const bulan = document.getElementById('filterTxBulan')?.value || '';
     const periodTitle = bulan ? `Periode tujuan ${formatTransaksiPeriode(bulan)}` : 'Semua periode tujuan';
 
@@ -233,12 +235,20 @@ function downloadTransaksiPdf() {
         startY: 28,
         head: [['Tanggal', 'Periode', 'Jenis', 'Kategori', 'Keterangan / Warga', 'Jumlah (Rp)']],
         body: rows.map(row => [row.Tanggal, row.Periode, row.Jenis, row.Kategori, row['Keterangan / Warga'], formatRupiah(row['Jumlah (Rp)'])]),
-        styles: { fontSize: 9, cellPadding: 3 },
+        margin: { left: 10, right: 10 },
+        styles: { fontSize: 8, cellPadding: 2, overflow: 'linebreak' },
         headStyles: { fillColor: [15, 118, 110] },
-        columnStyles: { 5: { halign: 'right' } },
+        columnStyles: {
+            0: { cellWidth: 23 },
+            1: { cellWidth: 32 },
+            2: { cellWidth: 22 },
+            3: { cellWidth: 32 },
+            4: { cellWidth: 'auto' },
+            5: { cellWidth: 40, halign: 'right', overflow: 'visible' }
+        },
         didDrawPage: data => {
             pdf.setFontSize(8);
-            pdf.text(`Halaman ${data.pageNumber}`, 196, 285, { align: 'right' });
+            pdf.text(`Halaman ${data.pageNumber}`, pageWidth - 10, pageHeight - 7, { align: 'right' });
         }
     });
     pdf.save(getTransaksiExportFilename('pdf'));

@@ -16,6 +16,11 @@
 }
 
 @media print {
+    @page {
+        size: A4 landscape;
+        margin: 10mm;
+    }
+
     .no-print {
         display: none !important;
     }
@@ -25,5 +30,76 @@
     body {
         background: white;
         color: black;
+        display: block !important;
+        min-height: 0 !important;
+    }
+    main,
+    .overflow-x-auto,
+    .overflow-x-hidden,
+    .overflow-hidden {
+        overflow: visible !important;
+    }
+    main {
+        padding: 0 !important;
+    }
+    #view-report > div,
+    #view-transaksi > div {
+        box-shadow: none !important;
+    }
+    #view-report table {
+        width: 100% !important;
+        table-layout: fixed;
+        font-size: 8pt;
+    }
+    #view-report th,
+    #view-report td {
+        padding: 3px 4px !important;
+    }
+    #view-report th:nth-child(1),
+    #view-report td:nth-child(1) { width: 4%; }
+    #view-report th:nth-child(2),
+    #view-report td:nth-child(2) { width: 10%; }
+    #view-report th:nth-child(3),
+    #view-report td:nth-child(3) { width: 12%; }
+    #view-report th:nth-child(4),
+    #view-report td:nth-child(4) { width: 9%; }
+    #view-report th:nth-child(5),
+    #view-report td:nth-child(5) { width: 11%; }
+    #view-report th:nth-child(6),
+    #view-report td:nth-child(6) {
+        width: 24%;
+        overflow-wrap: anywhere;
+    }
+    #view-report th:nth-last-child(-n+2),
+    #view-report td:nth-last-child(-n+2) {
+        width: 15%;
+        white-space: nowrap;
+    }
+    #view-report #reportSummaryCards {
+        display: grid !important;
+        grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+        gap: 8px !important;
+    }
+    #view-report #reportSummaryCards > div {
+        padding: 10px !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+    #view-report #repTotalMasuk,
+    #view-report #repTotalKeluar,
+    #view-report #repSelisih {
+        white-space: nowrap;
+        font-size: 10pt;
+    }
+    #view-report tr {
+        break-inside: avoid;
+    }
+    #view-transaksi table {
+        width: 100% !important;
+    }
+    #view-transaksi th:nth-child(6),
+    #view-transaksi td:nth-child(6) {
+        white-space: nowrap;
+        width: 1%;
     }
 }
