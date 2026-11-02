@@ -10,6 +10,9 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="assets/js/config/tailwind-config.js"></script>
 
+    <!-- Library ekspor Excel -->
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
+
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
@@ -129,10 +132,16 @@
                             </details>
                         </div>
                     </div>
-                    <button onclick="window.print()" class="bg-slate-800 hover:bg-slate-900 text-white px-4 py-2 rounded-xl text-sm font-medium inline-flex items-center space-x-2 transition">
-                        <i class="fa-solid fa-print"></i>
-                        <span>Cetak Laporan</span>
-                    </button>
+                    <div class="flex flex-wrap items-center justify-end gap-2">
+                        <button onclick="downloadReportExcel()" title="Download Excel" class="bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 px-3 py-2 rounded-xl text-sm font-medium inline-flex items-center space-x-2 transition">
+                            <i class="fa-solid fa-file-excel"></i>
+                            <span>Excel</span>
+                        </button>
+                        <button onclick="window.print()" class="bg-slate-800 hover:bg-slate-900 text-white px-4 py-2 rounded-xl text-sm font-medium inline-flex items-center space-x-2 transition">
+                            <i class="fa-solid fa-print"></i>
+                            <span>Cetak Laporan</span>
+                        </button>
+                    </div>
                 </div>
 
                 <div class="bg-white p-8 rounded-2xl border border-slate-200/80 shadow-sm space-y-6 print:shadow-none print:border-none print:p-0">

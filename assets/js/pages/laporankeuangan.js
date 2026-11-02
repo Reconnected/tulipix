@@ -88,6 +88,96 @@ function changeReportPage(page) {
     generateReport();
 }
 
+function getFilteredReportTransactions() {
+    const bulan = document.getElementById('reportBulan')?.value || '';
+    const periode = document.getElementById('reportPeriode')?.value || '';
+    const kategoriIds = getSelectedReportCategoryIds();
+
+    let list = [...(window.dataStore.transaksi || [])];
+    if (bulan) list = list.filter(t => t.tanggal && t.tanggal.startsWith(bulan));
+    if (periode) list = list.filter(t => t.periode === periode);
+    if (kategoriIds.length) list = list.filter(t => kategoriIds.includes(t.kategoriId));
+
+    return list.sort((a, b) => new Date(a.tanggal) - new Date(b.tanggal));
+}
+
+function getReportExportFilename() {
+    const bulan = document.getElementById('reportBulan')?.value || 'semua-tanggal';
+    const periode = document.getElementById('reportPeriode')?.value || 'semua-periode';
+    return `laporan-keuangan-${bulan}-${periode}.xlsx`;
+}
+
+function downloadReportExcel() {
+    if (typeof XLSX === 'undefined') {
+        window.showToast?.('Library Excel belum tersedia.', true);
+        return;
+    }
+
+    const list = getFilteredReportTransactions();
+    const saldoByTransaction = new Map();
+    let runningSaldo = 0;
+    [...(window.dataStore.transaksi || [])]
+        .sort((a, b) => new Date(a.tanggal) - new Date(b.tanggal))
+        .forEach(t => {
+            const amount = Number(t.jumlah) || 0;
+            runningSaldo += t.tipe === 'Pemasukan' ? amount : -amount;
+            saldoByTransaction.set(t, runningSaldo);
+        });
+
+    let totalMasuk = 0;
+    let totalKeluar = 0;
+    const rows = list.map((t, index) => {
+        const amount = Number(t.jumlah) || 0;
+        const masuk = t.tipe === 'Pemasukan' ? amount : 0;
+        const keluar = t.tipe !== 'Pemasukan' ? amount : 0;
+        totalMasuk += masuk;
+        totalKeluar += keluar;
+        const category = window.dataStore.kategori.find(k => k.id === t.kategoriId);
+        const resident = window.dataStore.warga.find(w => w.id === t.wargaId);
+        let description = t.keterangan || '-';
+        if (resident) description += ` (${resident.nama} - ${resident.blok})`;
+
+        return [
+            index + 1,
+            t.tanggal || '',
+            formatReportTransactionPeriod(t.periode),
+            t.tipe || '',
+            category?.nama || 'Umum',
+            description,
+            masuk,
+            keluar,
+            saldoByTransaction.get(t) || 0
+        ];
+    });
+
+    const bulan = document.getElementById('reportBulan')?.value || '';
+    const periode = document.getElementById('reportPeriode')?.value || '';
+    const filterText = document.getElementById('reportPeriodTitle')?.innerText || 'Tanggal input: semua · Periode tujuan: semua · Kategori: semua';
+    const data = [
+        ['Laporan Keuangan Kas Warga'],
+        ['Lorong Tulip IX'],
+        [filterText],
+        [],
+        ['#', 'Tanggal Input', 'Periode Tujuan', 'Jenis', 'Kategori', 'Keterangan', 'Masuk (Rp)', 'Keluar (Rp)', 'Saldo (Rp)'],
+        ...rows,
+        [],
+        ['', '', '', '', '', 'Total Pemasukan', totalMasuk, '', ''],
+        ['', '', '', '', '', 'Total Pengeluaran', '', totalKeluar, ''],
+        ['', '', '', '', '', 'Saldo Akhir', '', '', totalMasuk - totalKeluar]
+    ];
+
+    const worksheet = XLSX.utils.aoa_to_sheet(data);
+    worksheet['!cols'] = [
+        { wch: 6 }, { wch: 14 }, { wch: 20 }, { wch: 14 }, { wch: 24 },
+        { wch: 42 }, { wch: 16 }, { wch: 16 }, { wch: 16 }
+    ];
+    worksheet['!merges'] = [{ s: { r: 0, c: 0 }, e: { r: 0, c: 8 } }, { s: { r: 1, c: 0 }, e: { r: 1, c: 8 } }, { s: { r: 2, c: 0 }, e: { r: 2, c: 8 } }];
+
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Laporan Keuangan');
+    XLSX.writeFile(workbook, getReportExportFilename());
+}
+
 function renderReportPagination(totalItems) {
     const pagination = document.getElementById('reportPagination');
     if (!pagination) return;
