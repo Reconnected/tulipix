@@ -9,6 +9,7 @@ function getFilteredWarga() {
     const filterIuran = document.getElementById('filterStatusIuran')?.value || '';
     const filterHunian = document.getElementById('filterStatusHunian')?.value || '';
     const filterMenempati = document.getElementById('filterMenempatiRumah')?.value || '';
+    const filterIsActive = document.getElementById('filterIsActive')?.value || '';
 
     let list = [...(window.dataStore.warga || [])];
 
@@ -18,6 +19,7 @@ function getFilteredWarga() {
     if (filterMenempati === 'true') list = list.filter(w => w.menempatiRumah === true);
     if (filterMenempati === 'false') list = list.filter(w => w.menempatiRumah === false);
     if (filterMenempati === 'unset') list = list.filter(w => w.menempatiRumah == null);
+    if (filterIsActive !== '') list = list.filter(w => String(w.isActive ?? 1) === filterIsActive);
 
     return list.sort((a, b) => {
         return (a.nomorRumah || a.blok || '').localeCompare(
@@ -37,7 +39,7 @@ function renderWargaTable() {
     tbody.innerHTML = '';
 
     if (list.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="7" class="p-4 text-center text-slate-400 italic">Data warga tidak ditemukan.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="8" class="p-4 text-center text-slate-400 italic">Data warga tidak ditemukan.</td></tr>`;
         return;
     }
     const isAdmin = window.isAdmin;
@@ -73,6 +75,11 @@ function renderWargaTable() {
                         ${menempatiRumah}
                     </span>
                 </td>
+                <td class="p-4">
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${(Number(w.isActive ?? 1) === 1) ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-700'}">
+                        ${Number(w.isActive ?? 1) === 1 ? 'Aktif' : 'Tidak Aktif'} (${Number(w.isActive ?? 1)})
+                    </span>
+                </td>
                 <td class="p-4 text-slate-600">${w.hp || '-'}</td>
                 <td class="p-4">
                     <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold ${isLunas ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}">
@@ -98,6 +105,7 @@ function getWargaExportRows() {
         'Kepala Keluarga': w.nama || '',
         'Status Hunian': w.statusHunian || '',
         'Menempati Rumah': w.menempatiRumah === true ? 'Ya' : w.menempatiRumah === false ? 'Tidak' : 'Belum diatur',
+        'Status Aktif': `${Number(w.isActive ?? 1) === 1 ? 'Aktif' : 'Tidak Aktif'} (${Number(w.isActive ?? 1)})`,
         'No. Telephone / HP': w.hp || '',
         'Status Iuran Bulanan': w.statusIuran || ''
     }));
@@ -107,7 +115,8 @@ function getWargaExportFilename(extension) {
     const filterIuran = document.getElementById('filterStatusIuran')?.value || 'semua-status';
     const filterHunian = document.getElementById('filterStatusHunian')?.value || 'semua-hunian';
     const filterMenempati = document.getElementById('filterMenempatiRumah')?.value || 'semua-status-menempati';
-    return `master-warga-${filterIuran.toLowerCase()}-${filterHunian.toLowerCase().replaceAll(' ', '-')}-${filterMenempati.toLowerCase()}.${extension}`;
+    const filterIsActive = document.getElementById('filterIsActive')?.value || 'semua-status-aktif';
+    return `master-warga-${filterIuran.toLowerCase()}-${filterHunian.toLowerCase().replaceAll(' ', '-')}-${filterMenempati.toLowerCase()}-${filterIsActive}.${extension}`;
 }
 
 function downloadWargaExcel() {
@@ -117,7 +126,7 @@ function downloadWargaExcel() {
     }
 
     const worksheet = XLSX.utils.json_to_sheet(getWargaExportRows());
-    worksheet['!cols'] = [{ wch: 18 }, { wch: 28 }, { wch: 18 }, { wch: 18 }, { wch: 20 }, { wch: 24 }];
+    worksheet['!cols'] = [{ wch: 18 }, { wch: 28 }, { wch: 18 }, { wch: 18 }, { wch: 18 }, { wch: 20 }, { wch: 24 }];
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, 'Master Warga');
     XLSX.writeFile(workbook, getWargaExportFilename('xlsx'));
@@ -138,8 +147,8 @@ function downloadWargaPdf() {
     pdf.text('Daftar warga sesuai filter yang dipilih', 14, 22);
     pdf.autoTable({
         startY: 28,
-        head: [['No. Rumah/Blok', 'Kepala Keluarga', 'Status Hunian', 'Menempati Rumah', 'No. Telephone / HP', 'Status Iuran Bulanan']],
-        body: rows.map(row => [row['No. Rumah/Blok'], row['Kepala Keluarga'], row['Status Hunian'], row['Menempati Rumah'], row['No. Telephone / HP'], row['Status Iuran Bulanan']]),
+        head: [['No. Rumah/Blok', 'Kepala Keluarga', 'Status Hunian', 'Menempati Rumah', 'Status Aktif', 'No. Telephone / HP', 'Status Iuran Bulanan']],
+        body: rows.map(row => [row['No. Rumah/Blok'], row['Kepala Keluarga'], row['Status Hunian'], row['Menempati Rumah'], row['Status Aktif'], row['No. Telephone / HP'], row['Status Iuran Bulanan']]),
         styles: { fontSize: 9, cellPadding: 3 },
         headStyles: { fillColor: [15, 118, 110] },
         didDrawPage: data => {
@@ -170,6 +179,7 @@ function openModalWarga(id = null) {
             }
             if (document.getElementById('wargaHp')) document.getElementById('wargaHp').value = w.hp || '';
             if (document.getElementById('wargaStatusIuran')) document.getElementById('wargaStatusIuran').value = w.statusIuran;
+            if (document.getElementById('wargaIsActive')) document.getElementById('wargaIsActive').value = String(w.isActive ?? 1);
         }
     }
     const modal = document.getElementById('modalWarga');
@@ -198,6 +208,7 @@ async function saveWarga(e) {
         menempatiRumah: menempatiRumah === 'true',
         hp: document.getElementById('wargaHp')?.value || '',
         statusIuran: document.getElementById('wargaStatusIuran')?.value || 'Lunas',
+        isActive: Number(document.getElementById('wargaIsActive')?.value ?? 1) === 0 ? 0 : 1,
     };
     await window.dbSave('warga', item);
     closeModalWarga();

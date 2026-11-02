@@ -78,6 +78,10 @@
                 <i class="fa-solid fa-file-invoice-dollar w-5 text-center"></i>
                 <span>Laporan Keuangan</span>
             </a>
+            <a href="laporiuran.html" id="nav-monthly-dues" class="nav-item w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 hover:bg-slate-800 hover:text-white">
+                <i class="fa-solid fa-calendar-check w-5 text-center"></i>
+                <span>Laporan Iuran Bulanan</span>
+            </a>
         </nav>
 
         <!-- Footer Sidebar -->
@@ -136,6 +140,11 @@
                             <option value="false">Tidak Menempati</option>
                             <option value="unset">Belum Diatur</option>
                         </select>
+                        <select id="filterIsActive" onchange="renderWargaTable()" class="px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                            <option value="">Semua Status Aktif</option>
+                            <option value="1">Aktif</option>
+                            <option value="0">Tidak Aktif</option>
+                        </select>
                     </div>
                     <div class="flex flex-wrap items-center justify-end gap-2">
                         <button onclick="downloadWargaExcel()" title="Download Excel" class="bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 px-3 py-2 rounded-xl text-sm font-medium inline-flex items-center space-x-2 transition">
@@ -162,6 +171,7 @@
                                     <th class="p-4">Kepala Keluarga</th>
                                     <th class="p-4">Status Hunian</th>
                                     <th class="p-4">Menempati Rumah</th>
+                                    <th class="p-4">Status Aktif</th>
                                     <th class="p-4">No. Telephone / HP</th>
                                     <th class="p-4">Status Iuran Bulanan</th>
                                     <th class="p-4 text-center th-aksi-col hidden">Aksi (Admin)</th>
@@ -209,6 +219,13 @@
                         <option value="">Pilih status menempati</option>
                         <option value="true">Ya, menempati</option>
                         <option value="false">Tidak menempati</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Status Aktif</label>
+                    <select id="wargaIsActive" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                        <option value="1">1 - Aktif</option>
+                        <option value="0">0 - Tidak Aktif</option>
                     </select>
                 </div>
                 <div>
