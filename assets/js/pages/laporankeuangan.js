@@ -178,6 +178,83 @@ function downloadReportExcel() {
     XLSX.writeFile(workbook, getReportExportFilename());
 }
 
+function downloadReportPdf() {
+    const pdfConstructor = window.jspdf?.jsPDF;
+    if (!pdfConstructor) {
+        window.showToast?.('Library PDF belum tersedia.', true);
+        return;
+    }
+
+    const list = getFilteredReportTransactions();
+    const saldoByTransaction = new Map();
+    let runningSaldo = 0;
+    [...(window.dataStore.transaksi || [])]
+        .sort((a, b) => new Date(a.tanggal) - new Date(b.tanggal))
+        .forEach(t => {
+            const amount = Number(t.jumlah) || 0;
+            runningSaldo += t.tipe === 'Pemasukan' ? amount : -amount;
+            saldoByTransaction.set(t, runningSaldo);
+        });
+
+    const rows = [];
+    let totalMasuk = 0;
+    let totalKeluar = 0;
+
+    list.forEach((t, index) => {
+        const amount = Number(t.jumlah) || 0;
+        if (t.tipe === 'Pemasukan') totalMasuk += amount;
+        else totalKeluar += amount;
+
+        const category = window.dataStore.kategori.find(k => k.id === t.kategoriId);
+        const resident = window.dataStore.warga.find(w => w.id === t.wargaId);
+        let description = t.keterangan || '-';
+        if (resident) description += ` (${resident.nama} - ${resident.blok})`;
+
+        rows.push([
+            index + 1,
+            t.tanggal || '',
+            formatReportTransactionPeriod(t.periode),
+            t.tipe || '',
+            category?.nama || 'Umum',
+            description,
+            t.tipe === 'Pemasukan' ? formatRupiah(amount) : '-',
+            t.tipe !== 'Pemasukan' ? formatRupiah(amount) : '-',
+            formatRupiah(saldoByTransaction.get(t) || 0)
+        ]);
+    });
+
+    const pdf = new pdfConstructor({ orientation: 'landscape', unit: 'mm', format: 'a4' });
+    pdf.setFontSize(16);
+    pdf.text('Laporan Keuangan Kas Warga Tulip IX', 14, 15);
+    pdf.setFontSize(9);
+    pdf.text(document.getElementById('reportPeriodTitle')?.innerText || 'Semua periode', 14, 22);
+
+    pdf.autoTable({
+        startY: 27,
+        head: [['#', 'Tanggal Input', 'Periode Tujuan', 'Jenis', 'Kategori', 'Keterangan', 'Masuk (Rp)', 'Keluar (Rp)', 'Saldo (Rp)']],
+        body: rows,
+        foot: [['', '', '', '', '', 'TOTAL', formatRupiah(totalMasuk), formatRupiah(totalKeluar), formatRupiah(totalMasuk - totalKeluar)]],
+        margin: { left: 10, right: 10 },
+        styles: { fontSize: 7, cellPadding: 1.8, overflow: 'linebreak', valign: 'middle' },
+        headStyles: { fillColor: [15, 118, 110], textColor: 255, fontSize: 7 },
+        footStyles: { fillColor: [241, 245, 249], textColor: [30, 41, 59], fontStyle: 'bold' },
+        alternateRowStyles: { fillColor: [248, 250, 252] },
+        columnStyles: {
+            0: { cellWidth: 8 },
+            1: { cellWidth: 22 },
+            2: { cellWidth: 29 },
+            3: { cellWidth: 19 },
+            4: { cellWidth: 28 },
+            5: { cellWidth: 72 },
+            6: { cellWidth: 31, halign: 'right' },
+            7: { cellWidth: 31, halign: 'right' },
+            8: { cellWidth: 31, halign: 'right' }
+        }
+    });
+
+    pdf.save(getReportExportFilename().replace(/\.xlsx$/, '.pdf'));
+}
+
 function renderReportPagination(totalItems) {
     const pagination = document.getElementById('reportPagination');
     if (!pagination) return;
