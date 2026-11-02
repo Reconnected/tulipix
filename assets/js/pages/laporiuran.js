@@ -19,7 +19,7 @@ function getMonthlyDuesRows() {
     const year = getMonthlyDuesYear();
     const categoryIds = getMonthlyDuesCategoryIds();
     const residents = [...(window.dataStore.warga || [])]
-        .filter(w => Number(w.isActive ?? 1) === 1 && w.menempatiRumah === true)
+        .filter(w => Number(w.isActive ?? 1) === 1)
         .sort((a, b) => (a.nomorRumah || a.blok || '').localeCompare(
             (b.nomorRumah || b.blok || ''), undefined, { numeric: true, sensitivity: 'base' }
         ));
@@ -49,24 +49,25 @@ function generateMonthlyDuesReport() {
     if (!header || !tbody) return;
 
     const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
-    header.innerHTML = '<th class="py-2.5 px-3 sticky left-0 bg-slate-100">No. Rumah</th>' +
-        '<th class="py-2.5 px-3 sticky left-[90px] bg-slate-100">Kepala Keluarga</th>' +
+    header.innerHTML = '<th class="py-2.5 px-3 text-center sticky left-0 bg-slate-100">No.</th>' +
+        '<th class="py-2.5 px-3 sticky left-[42px] bg-slate-100">No. Rumah</th>' +
+        '<th class="py-2.5 px-3 sticky left-[132px] bg-slate-100">Kepala Keluarga</th>' +
         monthNames.map(month => `<th class="py-2.5 px-2 text-center whitespace-nowrap">${month}</th>`).join('') +
         '<th class="py-2.5 px-3 text-center">Jumlah Lunas</th>';
 
     const rows = getMonthlyDuesRows();
     if (!rows.length) {
-        tbody.innerHTML = '<tr><td colspan="15" class="py-4 text-center text-slate-400 italic">Tidak ada warga aktif yang menempati rumah.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="16" class="py-4 text-center text-slate-400 italic">Tidak ada warga aktif.</td></tr>';
         return;
     }
 
-    tbody.innerHTML = rows.map(({ resident, months }) => {
+    tbody.innerHTML = rows.map(({ resident, months }, index) => {
         const monthCells = months.map(status => status === 1
             ? '<td class="py-2.5 px-2 text-center"><span class="inline-flex px-2 py-1 rounded-full bg-emerald-100 text-emerald-700 font-semibold">Lunas</span></td>'
             : '<td class="py-2.5 px-2 text-center"><span class="inline-flex px-2 py-1 rounded-full bg-rose-100 text-rose-700 font-semibold">Belum</span></td>'
         ).join('');
         const paidCount = months.filter(status => status === 1).length;
-        return `<tr class="border-b border-slate-100"><td class="py-2.5 px-3 font-semibold sticky left-0 bg-white">${resident.blok || '-'}</td><td class="py-2.5 px-3 sticky left-[90px] bg-white">${resident.nama || '-'}</td>${monthCells}<td class="py-2.5 px-3 text-center font-bold">${paidCount}/12</td></tr>`;
+        return `<tr class="border-b border-slate-100"><td class="py-2.5 px-3 text-center sticky left-0 bg-white">${index + 1}</td><td class="py-2.5 px-3 font-semibold sticky left-[42px] bg-white">${resident.blok || '-'}</td><td class="py-2.5 px-3 sticky left-[132px] bg-white">${resident.nama || '-'}</td>${monthCells}<td class="py-2.5 px-3 text-center font-bold">${paidCount}/12</td></tr>`;
     }).join('');
 }
 
@@ -78,25 +79,27 @@ function downloadMonthlyDuesExcel() {
     const year = getMonthlyDuesYear();
     const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
     const data = [
-        [`Laporan Bulanan Iuran Warga Tahun ${year}`], ['Warga aktif dan menempati rumah'], [],
-        ['No. Rumah', 'Kepala Keluarga', ...monthNames, 'Jumlah Lunas'],
-        ...getMonthlyDuesRows().map(({ resident, months }) => [
-            resident.blok || '-', resident.nama || '-',
+        [`Laporan Bulanan Iuran Warga Tahun ${year}`], ['Warga aktif'], [],
+        ['No.', 'No. Rumah', 'Kepala Keluarga', ...monthNames, 'Jumlah Lunas'],
+        ...getMonthlyDuesRows().map(({ resident, months }, index) => [
+            index + 1, resident.blok || '-', resident.nama || '-',
             ...months.map(status => status === 1 ? 'Lunas' : 'Belum'),
             `${months.filter(status => status === 1).length}/12`
         ])
     ];
     const worksheet = XLSX.utils.aoa_to_sheet(data);
-    worksheet['!merges'] = [{ s: { r: 0, c: 0 }, e: { r: 0, c: 14 } }, { s: { r: 1, c: 0 }, e: { r: 1, c: 14 } }];
-    worksheet['!cols'] = [{ wch: 16 }, { wch: 28 }, ...monthNames.map(() => ({ wch: 10 })), { wch: 14 }];
+    worksheet['!merges'] = [{ s: { r: 0, c: 0 }, e: { r: 0, c: 15 } }, { s: { r: 1, c: 0 }, e: { r: 1, c: 15 } }];
+    worksheet['!cols'] = [{ wch: 6 }, { wch: 16 }, { wch: 28 }, ...monthNames.map(() => ({ wch: 10 })), { wch: 14 }];
 
     for (let row = 4; row < data.length; row++) {
-        for (let column = 2; column <= 13; column++) {
+        for (let column = 3; column <= 14; column++) {
             const cellAddress = XLSX.utils.encode_cell({ r: row, c: column });
-            const status = worksheet[cellAddress]?.v;
-            worksheet[cellAddress].s = {
-                fill: { patternType: 'solid', fgColor: { rgb: status === 'Lunas' ? 'DCFCE7' : 'FFE4E6' } },
-                font: { bold: true, color: { rgb: status === 'Lunas' ? '166534' : 'BE123C' } },
+            const cell = worksheet[cellAddress];
+            if (!cell) continue;
+
+            const isPaid = cell.v === 'Lunas';
+            cell.s = {
+                font: { bold: true, color: { rgb: isPaid ? '166534' : 'BE123C' } },
                 alignment: { horizontal: 'center', vertical: 'center' },
                 border: {
                     top: { style: 'thin', color: { rgb: 'CBD5E1' } },
@@ -116,7 +119,7 @@ function downloadMonthlyDuesExcel() {
     worksheet['A2'].s = { font: { italic: true, color: { rgb: '64748B' } }, alignment: { horizontal: 'center' } };
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, `Iuran ${year}`);
-    XLSX.writeFile(workbook, `laporan-bulanan-iuran-${year}.xlsx`);
+    XLSX.writeFile(workbook, `laporan-bulanan-iuran-${year}.xlsx`, { cellStyles: true });
 }
 
 function downloadMonthlyDuesPdf() {
@@ -130,22 +133,22 @@ function downloadMonthlyDuesPdf() {
     const pdf = new pdfConstructor({ orientation: 'landscape', unit: 'mm', format: 'a4' });
     pdf.setFontSize(16);
     pdf.text(`Laporan Bulanan Iuran Warga Tahun ${year}`, 14, 15);
-    const rows = getMonthlyDuesRows().map(({ resident, months }) => [
-        resident.blok || '-', resident.nama || '-',
+    const rows = getMonthlyDuesRows().map(({ resident, months }, index) => [
+        index + 1, resident.blok || '-', resident.nama || '-',
         ...months.map(status => status === 1 ? 'Lunas' : 'Belum'),
         `${months.filter(status => status === 1).length}/12`
     ]);
     pdf.autoTable({
-        startY: 27,
-        head: [['No. Rumah', 'Kepala Keluarga', ...monthNames, 'Lunas']],
+        startY: 21,
+        head: [['No.', 'No. Rumah', 'Kepala Keluarga', ...monthNames, 'Lunas']],
         body: rows,
-        margin: { left: 10, right: 10 },
+        margin: { top: 21, left: 10, right: 10, bottom: 5 },
         styles: { fontSize: 7, cellPadding: 1.5, halign: 'center', overflow: 'linebreak' },
         headStyles: { fillColor: [15, 118, 110], textColor: 255 },
-        columnStyles: { 0: { cellWidth: 24, halign: 'left' }, 1: { cellWidth: 42, halign: 'left' } },
+        columnStyles: { 0: { cellWidth: 10, halign: 'center' }, 1: { cellWidth: 24, halign: 'left' }, 2: { cellWidth: 42, halign: 'left' } },
         alternateRowStyles: { fillColor: [248, 250, 252] },
         didParseCell: data => {
-            if (data.section === 'body' && data.column.index >= 2 && data.column.index <= 13) {
+            if (data.section === 'body' && data.column.index >= 3 && data.column.index <= 14) {
                 if (data.cell.raw === 'Lunas') {
                     data.cell.styles.fillColor = [220, 252, 231];
                     data.cell.styles.textColor = [22, 101, 52];
